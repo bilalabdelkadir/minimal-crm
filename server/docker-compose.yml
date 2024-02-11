@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    container_name: inventory
+    container_name: easypeasy_crm
     image: postgres:latest
     ports:
       - '5432:5432'

@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import * as Joi from 'joi';
 import { ExceptionsLoggerFilter } from './utils/exceptionsLogger.filter';
+import { WorkspaceModule } from './workspace/workspace.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ExceptionsLoggerFilter } from './utils/exceptionsLogger.filter';
         PORT: Joi.number(),
       }),
     }),
+    WorkspaceModule,
   ],
   controllers: [],
   providers: [

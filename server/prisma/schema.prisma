@@ -39,8 +39,8 @@ enum Title {
 }
 
 model Workspace {
-  id          String      @id @default(uuid())
-  workspaceId String      @unique @map("workspace_id")
+  id          String   @id @default(uuid())
+  workspaceId String   @unique @map("workspace_id")
   name        String
   email       String
   phone       String
@@ -48,25 +48,12 @@ model Workspace {
   city        String
   state       String
   country     String
-  isActive    Boolean     @default(true) @map("is_active")
-  currency    Currency    @default(USD)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  IdSegment   IdSegment[]
+  isActive    Boolean  @default(true) @map("is_active")
+  currency    Currency @default(USD)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("workspaces")
-}
-
-model IdSegment {
-  id               Int       @id @default(autoincrement())
-  workspaceId      String    @map("workspace_id")
-  segmentName      String    @map("segment_name")
-  order            Int
-  segmentSeparator String    @map("segment_separator")
-  segmentLength    Int       @map("segment_length")
-  Workspace        Workspace @relation(fields: [workspaceId], references: [workspaceId])
-
-  @@map("id_segments")
 }
 
 model Company {
@@ -99,6 +86,8 @@ model Address {
   updatedAt   DateTime @updatedAt
   Company     Company? @relation("company_Address", fields: [companyId], references: [id])
   companyId   String?
+  contactId   String?
+  Contact     Contact? @relation("contact_Address", fields: [contactId], references: [id])
 
   @@map("addresses")
 }
@@ -121,6 +110,7 @@ model Contact {
   title                  Title?
   company                Company?  @relation(fields: [companyId], references: [id])
   companyId              String?
+  addresses              Address[] @relation("contact_Address")
   isActive               Boolean   @default(true) @map("is_active")
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,115 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Currency {
+  ETB
+  USD
+  EUR
+  GBP
+  JPY
+  CNY
+  INR
+  RUB
+  ZAR
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum Title {
+  Mr
+  Mrs
+  Miss
+  Ms
+  Dr
+  Prof
+  Rev
+  Sir
+  Lady
+  Lord
+  Mx
+}
+
+model Workspace {
+  id          String   @id @default(uuid())
+  workspaceId String   @unique @map("workspace_id")
+  name        String
+  email       String
+  phone       String
+  address     String
+  city        String
+  state       String
+  country     String
+  isActive    Boolean  @default(true) @map("is_active")
+  currency    Currency @default(USD)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("workspaces")
+}
+
+model Company {
+  id                     String    @id @default(uuid())
+  workspaceId            String    @map("workspace_id")
+  name                   String
+  email                  String
+  phone                  String
+  adresses               Address[] @relation("company_Address")
+  website                String?
+  marketingCommunication Boolean   @default(false) @map("marketing_communication")
+  isActive               Boolean   @default(true) @map("is_active")
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  Contact                Contact[]
+
+  @@map("companies")
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  address     String
+  city        String
+  state       String
+  country     String
+  postalCode  String   @map("postal_code")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Company     Company? @relation("company_Address", fields: [companyId], references: [id])
+  companyId   String?
+  contactId   String?
+  Contact     Contact? @relation("contact_Address", fields: [contactId], references: [id])
+
+  @@map("addresses")
+}
+
+model Contact {
+  id                     String    @id @default(uuid())
+  workspaceId            String    @map("workspace_id")
+  firstName              String    @map("first_name")
+  lastName               String    @map("last_name")
+  email                  String
+  phone                  String
+  source                 String?
+  marketingCommunication Boolean   @default(false) @map("marketing_communication")
+  preferredContactMethod String?   @map("preferred_contact_method")
+  preferredContactTime   String?   @map("preferred_contact_time")
+  preferredContactDay    String?   @map("preferred_contact_day")
+  preferredLanguage      String?   @map("preferred_language")
+  dateOfBirth            DateTime? @map("date_of_birth")
+  gender                 Gender?
+  title                  Title?
+  company                Company?  @relation(fields: [companyId], references: [id])
+  companyId              String?
+  addresses              Address[] @relation("contact_Address")
+  isActive               Boolean   @default(true) @map("is_active")
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@map("contacts")
 }

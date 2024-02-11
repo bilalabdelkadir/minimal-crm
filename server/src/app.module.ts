@@ -4,6 +4,7 @@ import { APP_FILTER } from '@nestjs/core';
 import * as Joi from 'joi';
 import { ExceptionsLoggerFilter } from './utils/exceptionsLogger.filter';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { DbModule } from './db/db.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
       }),
     }),
     WorkspaceModule,
+    DbModule,
   ],
   controllers: [],
   providers: [

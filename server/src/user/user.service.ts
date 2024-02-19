@@ -1,6 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignupDto } from 'src/auth/dtos/signup.dto';
 import { databaseService } from 'src/db/db.service';
+import { OtpDto, VeifiyEmailOrPhoneDto } from './dto/otp.dto';
 
 @Injectable()
 export class UserService {
@@ -36,5 +42,76 @@ export class UserService {
         OR: [{ email }, { phoneNumber: phone }],
       },
     });
+  }
+
+  async saveOtp(data: OtpDto) {
+    const expireAt = new Date();
+    expireAt.setMinutes(expireAt.getMinutes() + 30);
+
+    return await this.db.otp.create({
+      data: {
+        phoneNumber: data.phoneNumber,
+        otp: parseInt(data.otp),
+        email: data.email,
+        userId: data.userId,
+        sentOver: data.sentOver,
+        expiredAt: expireAt,
+      },
+    });
+  }
+
+  async getOtpByUserId(userId: string) {
+    return await this.db.otp.findFirst({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  // TODO: add email verification
+  async vefiyEmailOrPhone(data: VeifiyEmailOrPhoneDto) {
+    const otp = await this.db.otp.findFirst({
+      where: {
+        otp: parseInt(data.otp),
+        userId: data.userId,
+      },
+    });
+
+    if (otp.sentOver === 'PHONE') {
+      if (!otp) {
+        throw new NotFoundException('this otp is not valid, ask for a new one');
+      }
+      if (otp.expiredAt < new Date()) {
+        throw new BadRequestException('this otp is expired, ask for a new one');
+      }
+
+      const user = await this.db.user.update({
+        where: {
+          id: data.userId,
+        },
+        data: {
+          isPhoneVerified: true,
+        },
+      });
+
+      if (!user) {
+        throw new BadRequestException('Error Happend while updating the user');
+      }
+
+      const updatedOtp = await this.db.otp.delete({
+        where: {
+          id: otp.id,
+        },
+      });
+
+      if (!updatedOtp) {
+        throw new BadRequestException('Error Happend while updating the otp');
+      }
+
+      return {
+        success: true,
+        message: 'Phone Verified Successfully',
+      };
+    }
   }
 }

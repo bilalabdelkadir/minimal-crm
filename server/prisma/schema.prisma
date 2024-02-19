@@ -33,16 +33,24 @@ model User {
   @@map("users")
 }
 
-model Otp {
-  id          String   @id @default(uuid())
-  otp         Int      @map("otp")
-  email       String?
-  phoneNumber String?  @map("phone_number")
-  createdAt   DateTime @default(now()) @map("created_at")
-  expiredAt   DateTime @map("expired_at")
-  user        User?    @relation("otp", fields: [userId], references: [id])
-  userId      String?  @map("user_id")
+enum OtpSentTo {
+  EMAIL
+  PHONE
+}
 
+model Otp {
+  id          String    @id @default(uuid())
+  otp         Int       @map("otp")
+  email       String?
+  phoneNumber String?   @map("phone_number")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  expiredAt   DateTime  @map("expired_at")
+  user        User?     @relation("otp", fields: [userId], references: [id])
+  userId      String?   @unique @map("user_id")
+  sentOver    OtpSentTo @map("sent_over")
+  verifiedAt  DateTime? @map("verified_at")
+
+  @@unique([otp, userId])
   @@map("otps")
 }
 

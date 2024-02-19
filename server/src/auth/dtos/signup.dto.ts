@@ -79,7 +79,6 @@ export class SignupDto {
     description: 'The phone number of the user',
     required: true,
   })
-  @Matches(/^\+[1-9]\d{1,14}$/)
   @MinLength(9, {
     message: 'Phone number must be at least 9 characters long',
   })

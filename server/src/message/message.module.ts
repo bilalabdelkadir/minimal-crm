@@ -6,14 +6,9 @@ import { MessageController } from './message.controller';
 import { MessageService } from './message.service';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(), // Assuming you need ConfigModule for GEEZ_API_KEY
-    HttpModule, // Assuming you need HttpModule for HttpService
-  ],
+  imports: [ConfigModule.forRoot(), HttpModule],
   providers: [GeezSmsProvider, MessageService],
-  exports: [
-    GeezSmsProvider, // Exporting the provider makes it available for injection in other modules
-  ],
+  exports: [MessageService],
   controllers: [MessageController],
 })
 export class MessageModule {}

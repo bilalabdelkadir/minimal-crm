@@ -6,11 +6,11 @@ import { TestMessageDto } from './dtos/send-test-message.dto';
 export class MessageService {
   constructor(private readonly geezSmsProvider: GeezSmsProvider) {}
 
-  async testMessage({ message, phone_number }: TestMessageDto) {
-    return this.geezSmsProvider.sendSMS(message, phone_number);
+  async testMessage({ message, phoneNumber }: TestMessageDto) {
+    return this.geezSmsProvider.sendSMS(message, phoneNumber);
   }
 
-  async sendOtpMessage({ message, phone_number }: TestMessageDto) {
-    return this.geezSmsProvider.sendSMS(message, phone_number);
+  async sendOtpMessage({ message, phoneNumber }: TestMessageDto) {
+    return this.geezSmsProvider.sendSMS(message, phoneNumber);
   }
 }

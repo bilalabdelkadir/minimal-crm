@@ -2,9 +2,12 @@ import { MiddlewareConsumer, Module, NestMiddleware } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import * as Joi from 'joi';
-import { ExceptionsLoggerFilter } from './utils/exceptionsLogger.filter';
-import { DbModule } from './db/db.module';
+import { HttpExceptionFilter } from './utils/exceptionsLogger.filter';
+import { DatabaseModule } from './db/db.module';
 import { LoggingMiddleware } from './utils/loggingMiddleware';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -16,15 +19,19 @@ import { LoggingMiddleware } from './utils/loggingMiddleware';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
         PORT: Joi.number(),
+        GEEZ_API_KEY: Joi.string().required(),
       }),
     }),
-    DbModule,
+    DatabaseModule,
+    UserModule,
+    AuthModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [
     {
       provide: APP_FILTER,
-      useClass: ExceptionsLoggerFilter,
+      useClass: HttpExceptionFilter,
     },
   ],
 })

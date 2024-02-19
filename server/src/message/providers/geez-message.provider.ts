@@ -43,8 +43,6 @@ export class GeezSmsProvider implements ISMSProvider {
       method: 'GET',
     };
 
-    Logger.log(`final config: ${JSON.stringify(config)}`);
-
     try {
       const { data } = await promisifyObservable(
         this.httpService.get<IGeezSMSResponse>(buildurl),

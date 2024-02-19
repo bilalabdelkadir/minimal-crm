@@ -9,6 +9,10 @@ import { SignupDto } from './dtos/signup.dto';
 import { UserService } from 'src/user/user.service';
 import { HashingService } from './hash/hashing.service';
 import { CustomErrorException } from 'src/utils/errorHandler';
+import { MessageService } from 'src/message/message.service';
+import { otpGenerator } from 'src/utils/otp-generator';
+import { OtpSentTo } from '@prisma/client';
+import { VeifiyEmailOrPhoneDto } from 'src/user/dto/otp.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +20,7 @@ export class AuthService {
     private readonly db: databaseService,
     private readonly userService: UserService,
     private readonly hashingService: HashingService,
+    private readonly messageService: MessageService,
   ) {}
 
   async signup(data: SignupDto) {
@@ -25,9 +30,7 @@ export class AuthService {
         data.phoneNumber,
       );
 
-      Logger.log(existingUser);
-
-      if (existingUser) {
+      if (existingUser.length > 0) {
         throw new ConflictException(
           'it looks like you already have an account, please login',
         );
@@ -49,6 +52,25 @@ export class AuthService {
         throw new BadRequestException('Error Happend while creating the user');
       }
 
+      const otpResponse = await this.sendOtpOverSms(data.phoneNumber);
+
+      if (otpResponse.error) {
+        Logger.error(otpResponse.error);
+        throw new BadRequestException('Error Happend while sending the otp');
+      }
+
+      const saveOtp = await this.userService.saveOtp({
+        phoneNumber: data.phoneNumber,
+        otp: otpResponse.otp,
+        email: data.email,
+        userId: user.id,
+        sentOver: otpResponse.sentOver,
+      });
+
+      if (!saveOtp) {
+        throw new BadRequestException('Error Happend while saving the otp');
+      }
+
       return {
         message: 'User Created Successfully',
         data: user,
@@ -56,5 +78,32 @@ export class AuthService {
     } catch (e) {
       CustomErrorException.handle(e);
     }
+  }
+
+  async verifyOtp(data: VeifiyEmailOrPhoneDto) {
+    const otp = await this.userService.vefiyEmailOrPhone(data);
+    if (!otp) {
+      throw new BadRequestException('Error Happend while verifying the otp');
+    } else if (otp.success) {
+      return {
+        fakeJwt: 'fakeJwt',
+        fakeRefreshToken: 'fakeRefreshToken',
+      };
+    }
+  }
+
+  private async sendOtpOverSms(phoneNumber: string) {
+    const otp = otpGenerator(4);
+    const message = `Your OTP for Condigital finance account is ${otp}, this will be expired in 30 minutes`;
+    const response = await this.messageService.sendOtpMessage({
+      message,
+      phoneNumber,
+    });
+
+    return {
+      error: response.error,
+      otp,
+      sentOver: OtpSentTo.PHONE,
+    };
   }
 }

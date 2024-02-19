@@ -9,13 +9,13 @@ export class MessageController {
 
   @Post('test-message')
   testMessage(@Body() data: TestMessageDto) {
-    const { message, phone_number } = data;
+    const { message, phoneNumber } = data;
 
-    if (!message || !phone_number) {
+    if (!message || !phoneNumber) {
       throw new HttpException('Invalid request', 400);
     }
 
-    Logger.log(`Sending message to ${phone_number}`);
+    Logger.log(`Sending message to ${phoneNumber}`);
     return this.messageService.testMessage(data);
   }
 }

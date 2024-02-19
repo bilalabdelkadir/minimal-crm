@@ -12,5 +12,5 @@ export class TestMessageDto {
     example: '0943656931',
   })
   @IsString()
-  phone_number: string;
+  phoneNumber: string;
 }

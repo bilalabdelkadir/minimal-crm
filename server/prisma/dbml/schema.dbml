@@ -18,6 +18,7 @@ Table users {
   updatedAt DateTime [default: `now()`, not null]
   deletedAt DateTime
   associatedWorkspaces workspaces [not null]
+  otp otps [not null]
 }
 
 Table otps {
@@ -27,6 +28,14 @@ Table otps {
   phoneNumber String
   createdAt DateTime [default: `now()`, not null]
   expiredAt DateTime [not null]
+  user users
+  userId String [unique]
+  sentOver OtpSentTo [not null]
+  verifiedAt DateTime
+
+  indexes {
+    (otp, userId) [unique]
+  }
 }
 
 Table workspaces {
@@ -46,3 +55,10 @@ Table associatedWorkspaces {
   associatedworkspacesId String [ref: > workspaces.id]
   userId String [ref: > users.id]
 }
+
+Enum OtpSentTo {
+  EMAIL
+  PHONE
+}
+
+Ref: otps.userId > users.id

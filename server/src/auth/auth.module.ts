@@ -3,9 +3,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
 import { HashingService } from './hash/hashing.service';
+import { MessageModule } from 'src/message/message.module';
 
 @Module({
-  imports: [UserModule],
+  imports: [UserModule, MessageModule],
   controllers: [AuthController],
   providers: [AuthService, HashingService],
 })

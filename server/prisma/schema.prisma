@@ -7,10 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 model User {
   id                       String      @id @default(uuid())
   email                    String      @unique
-  name                     String
+  firstName                String      @map("first_name")
+  lastName                 String      @map("last_name")
   password                 String
   phoneNumber              String      @unique @map("phone_number")
   isPhoneVerified          Boolean     @default(false) @map("is_phone_verified")
@@ -22,6 +27,7 @@ model User {
   updatedAt                DateTime    @default(now()) @updatedAt @map("updated_at")
   deletedAt                DateTime?   @map("deleted_at")
   associatedWorkspaces     Workspace[] @relation("associatedWorkspaces")
+  otp                      Otp[]       @relation("otp")
 
   @@index([email, phoneNumber, createdAt])
   @@map("users")
@@ -34,6 +40,8 @@ model Otp {
   phoneNumber String?  @map("phone_number")
   createdAt   DateTime @default(now()) @map("created_at")
   expiredAt   DateTime @map("expired_at")
+  user        User?    @relation("otp", fields: [userId], references: [id])
+  userId      String?  @map("user_id")
 
   @@map("otps")
 }

@@ -1,0 +1,48 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  email String [unique, not null]
+  firstName String [not null]
+  lastName String [not null]
+  password String [not null]
+  phoneNumber String [unique, not null]
+  isPhoneVerified Boolean [not null, default: false]
+  isEmailVerified Boolean [not null, default: false]
+  isMultiFactorAuthEnabled Boolean [not null, default: false]
+  profilePicture String
+  refreshToken String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  associatedWorkspaces workspaces [not null]
+}
+
+Table otps {
+  id String [pk]
+  otp Int [not null]
+  email String
+  phoneNumber String
+  createdAt DateTime [default: `now()`, not null]
+  expiredAt DateTime [not null]
+}
+
+Table workspaces {
+  id String [pk]
+  name String [not null]
+  description String
+  workspaceId String [unique, not null]
+  logo String
+  website String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  user users [not null]
+}
+
+Table associatedWorkspaces {
+  associatedworkspacesId String [ref: > workspaces.id]
+  userId String [ref: > users.id]
+}

@@ -8,6 +8,7 @@ import { LoggingMiddleware } from './utils/loggingMiddleware';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -26,6 +27,9 @@ import { MessageModule } from './message/message.module';
     UserModule,
     AuthModule,
     MessageModule,
+    JwtModule.register({
+      global: true,
+    }),
   ],
   controllers: [],
   providers: [

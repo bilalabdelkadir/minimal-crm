@@ -15,14 +15,19 @@ import { OtpSentTo } from '@prisma/client';
 import { VeifiyEmailOrPhoneDto } from 'src/user/dto/otp.dto';
 import { JwtGeneratorService } from './jwt/jwt.service';
 import { SigninDto } from './dtos/signin.dto';
+import { MailService } from 'src/mail/mail.service';
+import { error } from 'console';
 
 @Injectable()
 export class AuthService {
+  logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly hashingService: HashingService,
     private readonly messageService: MessageService,
     private readonly jwtGeneratorService: JwtGeneratorService,
+    private readonly mailService: MailService,
   ) {}
 
   async signup(data: SignupDto) {
@@ -54,19 +59,28 @@ export class AuthService {
         throw new BadRequestException('Error Happend while creating the user');
       }
 
-      const otpResponse = await this.sendOtpOverSms(data.phoneNumber);
+      // const smsOtpResponse = await this.sendOtpOverSms(data.phoneNumber);
+      const emailOtpResponse = await this.sendOtpOverEmail(data.email);
 
-      if (otpResponse.error) {
-        Logger.error(otpResponse.error);
+      // if (smsOtpResponse.error) {
+      //   this.logger.error(smsOtpResponse.error);
+      //   throw new BadRequestException('Error Happend while sending the otp');
+      // }
+      // TODO: fix this letter
+      let smsOtpResponse;
+
+      if (!emailOtpResponse.otp || !emailOtpResponse.sentOver) {
         throw new BadRequestException('Error Happend while sending the otp');
       }
 
       const saveOtp = await this.userService.saveOtp({
         phoneNumber: data.phoneNumber,
-        otp: otpResponse.otp,
+        otp: emailOtpResponse.otp ? emailOtpResponse.otp : smsOtpResponse.otp,
         email: data.email,
         userId: user.id,
-        sentOver: otpResponse.sentOver,
+        sentOver: emailOtpResponse.sentOver
+          ? emailOtpResponse.sentOver
+          : smsOtpResponse.sentOver,
       });
 
       if (!saveOtp) {
@@ -78,6 +92,7 @@ export class AuthService {
         data: user,
       };
     } catch (e) {
+      this.logger.error(e);
       CustomErrorException.handle(e);
     }
   }
@@ -95,8 +110,12 @@ export class AuthService {
       throw new NotFoundException('wrong password');
     }
 
-    const accessToken = this.jwtGeneratorService.generateAccessToken(user);
-    const refreshToken = this.jwtGeneratorService.generateRefreshToken(user);
+    const accessToken = this.jwtGeneratorService.generateAccessToken({
+      userId: user.id,
+    });
+    const refreshToken = this.jwtGeneratorService.generateRefreshToken({
+      userId: user.id,
+    });
 
     return {
       user: {
@@ -118,6 +137,20 @@ export class AuthService {
         fakeRefreshToken: 'fakeRefreshToken',
       };
     }
+  }
+
+  private async sendOtpOverEmail(email: string) {
+    const otp = otpGenerator(4);
+    const message: string = `your otp for easypeasy-crm is ${otp}`;
+    const response = await this.mailService.sendOtpMessage({
+      email,
+      message,
+    });
+
+    return {
+      otp,
+      sentOver: OtpSentTo.EMAIL,
+    };
   }
 
   private async sendOtpOverSms(phoneNumber: string) {

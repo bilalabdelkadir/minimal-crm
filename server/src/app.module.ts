@@ -9,7 +9,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
 import { JwtModule } from '@nestjs/jwt';
-
+import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,19 +19,23 @@ import { JwtModule } from '@nestjs/jwt';
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
-        PORT: Joi.number(),
+        EMAIL_USERNAME: Joi.string().required(),
+        EMAIL_PASSWORD: Joi.string().required(),
+        MAIL_HOST: Joi.string().required(),
+        MAIL_PORT: Joi.string().required(),
         GEEZ_API_KEY: Joi.string().required(),
+        PORT: Joi.number(),
       }),
+    }),
+    JwtModule.register({
+      global: true,
     }),
     DatabaseModule,
     UserModule,
     AuthModule,
     MessageModule,
-    JwtModule.register({
-      global: true,
-    }),
+    MailModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_FILTER,

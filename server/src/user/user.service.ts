@@ -27,7 +27,7 @@ export class UserService {
     return user;
   }
 
-  async getUserById(id: string) {
+  async findUserById(id: string) {
     return await this.db.user.findUnique({
       where: {
         id,
@@ -35,13 +35,20 @@ export class UserService {
     });
   }
 
-  async getUserByEmailAndPhone(email: string, phone: string) {
-    console.log(email, phone);
-    return await this.db.user.findMany({
-      where: {
-        OR: [{ email }, { phoneNumber: phone }],
-      },
-    });
+  async findUserByEmailAndPhone(email?: string, phone?: string) {
+    if (!email && phone) {
+      return await this.db.user.findUnique({
+        where: {
+          phoneNumber: phone,
+        },
+      });
+    } else if (email && !phone) {
+      return await this.db.user.findUnique({
+        where: {
+          email,
+        },
+      });
+    }
   }
 
   async saveOtp(data: OtpDto) {

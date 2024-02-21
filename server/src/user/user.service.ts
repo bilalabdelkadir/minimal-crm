@@ -77,14 +77,13 @@ export class UserService {
       },
     });
 
+    if (!otp) {
+      throw new NotFoundException('this otp is not valid, ask for a new one');
+    }
+    if (otp.expiredAt < new Date()) {
+      throw new BadRequestException('this otp is expired, ask for a new one');
+    }
     if (otp.sentOver === 'PHONE') {
-      if (!otp) {
-        throw new NotFoundException('this otp is not valid, ask for a new one');
-      }
-      if (otp.expiredAt < new Date()) {
-        throw new BadRequestException('this otp is expired, ask for a new one');
-      }
-
       const user = await this.db.user.update({
         where: {
           id: data.userId,
@@ -111,6 +110,36 @@ export class UserService {
       return {
         success: true,
         message: 'Phone Verified Successfully',
+      };
+    }
+
+    if (otp.sentOver === 'EMAIL') {
+      const user = await this.db.user.update({
+        where: {
+          id: data.userId,
+        },
+        data: {
+          isEmailVerified: true,
+        },
+      });
+
+      if (!user) {
+        throw new BadRequestException('Error Happend while updating the user');
+      }
+
+      const updatedOtp = await this.db.otp.delete({
+        where: {
+          id: otp.id,
+        },
+      });
+
+      if (!updatedOtp) {
+        throw new BadRequestException('Error Happend while updating the otp');
+      }
+
+      return {
+        success: true,
+        message: 'Email Verified Successfully',
       };
     }
   }

@@ -110,10 +110,10 @@ export class AuthService {
       throw new NotFoundException('wrong password');
     }
 
-    const accessToken = this.jwtGeneratorService.generateAccessToken({
+    const accessToken = await this.jwtGeneratorService.generateAccessToken({
       userId: user.id,
     });
-    const refreshToken = this.jwtGeneratorService.generateRefreshToken({
+    const refreshToken = await this.jwtGeneratorService.generateRefreshToken({
       userId: user.id,
     });
 

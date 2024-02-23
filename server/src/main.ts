@@ -42,15 +42,11 @@ async function bootstrap() {
     });
   }
 
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    Logger.log(`${req.method} ${req.url}`);
-    next();
-  });
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      // disableErrorMessages
     }),
   );
 

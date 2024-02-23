@@ -7,113 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Currency {
-  ETB
-  USD
-  EUR
-  GBP
-  JPY
-  CNY
-  INR
-  RUB
-  ZAR
+generator dbml {
+  provider = "prisma-dbml-generator"
 }
 
-enum Gender {
-  Male
-  Female
+model User {
+  id                       String      @id @default(uuid())
+  email                    String      @unique
+  firstName                String      @map("first_name")
+  lastName                 String      @map("last_name")
+  password                 String
+  phoneNumber              String      @unique @map("phone_number")
+  isPhoneVerified          Boolean     @default(false) @map("is_phone_verified")
+  isEmailVerified          Boolean     @default(false) @map("is_email_verified")
+  isMultiFactorAuthEnabled Boolean     @default(false) @map("is_multi_factor_auth_enabled")
+  profilePicture           String?     @map("profile_picture")
+  refreshToken             String?     @map("refresh_token")
+  createdAt                DateTime    @default(now()) @map("created_at")
+  updatedAt                DateTime    @default(now()) @updatedAt @map("updated_at")
+  deletedAt                DateTime?   @map("deleted_at")
+  associatedWorkspaces     Workspace[] @relation("associatedWorkspaces")
+  otp                      Otp[]       @relation("otp")
+
+  @@index([email, phoneNumber, createdAt])
+  @@map("users")
 }
 
-enum Title {
-  Mr
-  Mrs
-  Miss
-  Ms
-  Dr
-  Prof
-  Rev
-  Sir
-  Lady
-  Lord
-  Mx
+enum OtpSentTo {
+  EMAIL
+  PHONE
+}
+
+model Otp {
+  id          String    @id @default(uuid())
+  otp         Int       @map("otp")
+  email       String?
+  phoneNumber String?   @map("phone_number")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  expiredAt   DateTime  @map("expired_at")
+  user        User?     @relation("otp", fields: [userId], references: [id])
+  userId      String?   @unique @map("user_id")
+  sentOver    OtpSentTo @map("sent_over")
+  verifiedAt  DateTime? @map("verified_at")
+
+  @@unique([otp, userId])
+  @@map("otps")
 }
 
 model Workspace {
-  id          String   @id @default(uuid())
-  workspaceId String   @unique @map("workspace_id")
+  id          String    @id @default(uuid())
   name        String
-  email       String
-  phone       String
-  address     String
-  city        String
-  state       String
-  country     String
-  isActive    Boolean  @default(true) @map("is_active")
-  currency    Currency @default(USD)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String?
+  workspaceId String    @unique @map("workspace_id")
+  logo        String?
+  website     String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  user        User[]    @relation("associatedWorkspaces")
 
   @@map("workspaces")
-}
-
-model Company {
-  id                     String    @id @default(uuid())
-  workspaceId            String    @map("workspace_id")
-  name                   String
-  email                  String
-  phone                  String
-  adresses               Address[] @relation("company_Address")
-  website                String?
-  marketingCommunication Boolean   @default(false) @map("marketing_communication")
-  isActive               Boolean   @default(true) @map("is_active")
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-  Contact                Contact[]
-
-  @@map("companies")
-}
-
-model Address {
-  id          String   @id @default(uuid())
-  workspaceId String   @map("workspace_id")
-  address     String
-  city        String
-  state       String
-  country     String
-  postalCode  String   @map("postal_code")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Company     Company? @relation("company_Address", fields: [companyId], references: [id])
-  companyId   String?
-  contactId   String?
-  Contact     Contact? @relation("contact_Address", fields: [contactId], references: [id])
-
-  @@map("addresses")
-}
-
-model Contact {
-  id                     String    @id @default(uuid())
-  workspaceId            String    @map("workspace_id")
-  firstName              String    @map("first_name")
-  lastName               String    @map("last_name")
-  email                  String
-  phone                  String
-  source                 String?
-  marketingCommunication Boolean   @default(false) @map("marketing_communication")
-  preferredContactMethod String?   @map("preferred_contact_method")
-  preferredContactTime   String?   @map("preferred_contact_time")
-  preferredContactDay    String?   @map("preferred_contact_day")
-  preferredLanguage      String?   @map("preferred_language")
-  dateOfBirth            DateTime? @map("date_of_birth")
-  gender                 Gender?
-  title                  Title?
-  company                Company?  @relation(fields: [companyId], references: [id])
-  companyId              String?
-  addresses              Address[] @relation("contact_Address")
-  isActive               Boolean   @default(true) @map("is_active")
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-
-  @@map("contacts")
 }

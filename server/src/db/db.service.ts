@@ -7,7 +7,7 @@ import {
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class DbService
+export class databaseService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
@@ -19,23 +19,3 @@ export class DbService
     await this.$disconnect();
   }
 }
-
-export const isUniqueConstraintError = (
-  e: Error,
-): e is Prisma.PrismaClientKnownRequestError =>
-  e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002';
-
-export const isRecordNotFoundError = (
-  e: Error,
-): e is Prisma.PrismaClientKnownRequestError =>
-  e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025';
-
-export const isRecordNotFound = (
-  e: Error,
-): e is Prisma.PrismaClientKnownRequestError =>
-  e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2016';
-
-export const foreignKeyConstraintError = (
-  e: Error,
-): e is Prisma.PrismaClientKnownRequestError =>
-  e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2003';

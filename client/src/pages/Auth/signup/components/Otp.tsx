@@ -3,7 +3,11 @@ import { Button, PinInput } from '@mantine/core';
 import { VerifyOtpMutation } from '@/pages/Auth/shared/auth.query';
 import { AxiosError } from 'axios';
 import { useAppDispatch } from '@/store/store';
-import { setAccessToken, setUser } from '@/store/slice/auth.slice';
+import {
+  setAccessToken,
+  setRefreshToken,
+  setUser,
+} from '@/store/slice/auth.slice';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/router/constant';
@@ -33,7 +37,7 @@ const Otp: React.FC<OtpProps> = ({ userId }) => {
       console.log(data);
       dispatch(setUser(data.user));
       dispatch(setAccessToken(data.accessToken));
-      dispatch(setAccessToken(data.refreshToken));
+      dispatch(setRefreshToken(data.refreshToken));
       notifications.show({
         title: 'Success',
         autoClose: 3000,

@@ -6,9 +6,9 @@ Table users {
   id String [pk]
   email String [unique, not null]
   firstName String [not null]
-  lastName String [not null]
+  lastName String
   password String [not null]
-  phoneNumber String [unique, not null]
+  phoneNumber String [unique]
   isPhoneVerified Boolean [not null, default: false]
   isEmailVerified Boolean [not null, default: false]
   isMultiFactorAuthEnabled Boolean [not null, default: false]

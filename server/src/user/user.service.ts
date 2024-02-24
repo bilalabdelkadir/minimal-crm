@@ -17,7 +17,6 @@ export class UserService {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        phoneNumber: data.phoneNumber,
         password: data.password,
       },
     });
@@ -56,7 +55,6 @@ export class UserService {
 
     return await this.db.otp.create({
       data: {
-        phoneNumber: data.phoneNumber,
         otp: parseInt(data.otp),
         email: data.email,
         userId: data.userId,

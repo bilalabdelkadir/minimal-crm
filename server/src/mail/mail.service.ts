@@ -17,7 +17,7 @@ export class MailService {
       html: `
             <div>
               <h1>Hello,</h1>
-              <p>You have been invited to join ${configConstant.appName} on Africa Escape</p>
+              <p>Email confirmation for ${configConstant.appName}.</p>
               <p>${message}</p>
             </div>
             `,

@@ -1,5 +1,8 @@
+import App from '@/App';
 import { createBrowserRouter } from 'react-router-dom';
-import App from '../App';
+import { ROUTES } from './constant';
+import SignUp from '@/pages/Auth/signup';
+import WorkSpace from '@/pages/workspace';
 
 const Router = createBrowserRouter([
   {
@@ -7,8 +10,12 @@ const Router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: '/about',
-    element: <h1>About</h1>,
+    path: ROUTES.SIGN_UP,
+    element: <SignUp />,
+  },
+  {
+    path: ROUTES.WORKSPACE,
+    element: <WorkSpace />,
   },
 ]);
 

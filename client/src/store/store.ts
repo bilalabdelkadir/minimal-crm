@@ -17,6 +17,7 @@ const persistedReducer = persistReducer(
   {
     key: 'main',
     storage,
+    whitelist: ['auth'],
   },
   rootReducer
 );

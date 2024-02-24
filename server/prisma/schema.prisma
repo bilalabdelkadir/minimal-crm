@@ -15,9 +15,9 @@ model User {
   id                       String      @id @default(uuid())
   email                    String      @unique
   firstName                String      @map("first_name")
-  lastName                 String      @map("last_name")
+  lastName                 String?     @map("last_name")
   password                 String
-  phoneNumber              String      @unique @map("phone_number")
+  phoneNumber              String?     @unique @map("phone_number")
   isPhoneVerified          Boolean     @default(false) @map("is_phone_verified")
   isEmailVerified          Boolean     @default(false) @map("is_email_verified")
   isMultiFactorAuthEnabled Boolean     @default(false) @map("is_multi_factor_auth_enabled")

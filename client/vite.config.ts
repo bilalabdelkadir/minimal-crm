@@ -18,6 +18,7 @@ export default defineConfig({
       '@styles': '@/styles',
       '@assets': '@/assets',
       '@types': '@/types',
+      '@service': '@/service',
       '@hooks': '@/hooks',
     },
   },

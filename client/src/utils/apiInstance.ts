@@ -1,15 +1,14 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
 
 // Define base URL
-const baseURL = 'http://localhost:8000/api/v1/';
+const baseURL = "http://localhost:8000/api/v1/";
 
 // Create Axios instance
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: baseURL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-  timeout: 10000,
 });
 
 // Add response interceptor
@@ -21,7 +20,7 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     // Handle errors globally
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add request interceptor
@@ -33,7 +32,7 @@ axiosInstance.interceptors.request.use(
   (error) => {
     // Handle request errors
     return Promise.reject(error);
-  }
+  },
 );
 
 // Export Axios instance

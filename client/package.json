@@ -18,6 +18,7 @@
     "@mantine/notifications": "^7.5.3",
     "@mantine/nprogress": "^7.5.3",
     "@reduxjs/toolkit": "^2.2.1",
+    "@tabler/icons-react": "^2.47.0",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
     "path": "^0.12.7",
@@ -44,6 +45,8 @@
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",
     "postcss-simple-vars": "^7.0.1",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"

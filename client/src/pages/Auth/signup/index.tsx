@@ -1,49 +1,39 @@
-import { Card, Flex } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
-import { SignupMutation } from '../shared/auth.query';
-import { type AxiosError } from 'axios';
-import { signupSchema } from '../shared/auth.schema';
-import { notifications } from '@mantine/notifications';
-import SignupTitle from './components/Title';
-import { useState } from 'react';
-import SignupForm from './components/Signup.form';
-import Otp from './components/Otp';
-import { IUser } from '@/types/User.type';
+import { Card, Image } from "@mantine/core";
+import { useForm, zodResolver } from "@mantine/form";
+import { SignupMutation } from "../shared/auth.query";
+import { type AxiosError } from "axios";
+import { signupSchema } from "../shared/auth.schema";
+import SignupTitle from "./components/SignupTitle";
+import { useState } from "react";
+import SignupForm from "./components/Signup.form";
+import Otp from "./components/Otp";
+import { type IUser } from "@/types/User.type";
+import CrmDashboardImage from "../../../assets/fixed-crm.png";
 import {
   type ISignupForm,
   type ISignupResponse,
-} from '../shared/auth.interface';
+} from "../shared/auth.interface";
+import { NavLink } from "react-router-dom";
+import { ROUTES } from "@/router/constant";
+import SocialAuth from "./components/SocialAuth";
+import {
+  onErrorNotfication,
+  onSuccessNotification,
+} from "../shared/auth.utils";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
   const [user, setUser] = useState<IUser | null>(null);
-  const onError = (error: AxiosError | any) => {
-    console.log(error);
-    notifications.show({
-      title: 'Error',
-      autoClose: 5000,
-      message:
-        error?.response?.data.message || error?.message || 'An error occurred',
-      color: 'red',
-    });
-  };
 
   const { isLoading, mutateAsync } = SignupMutation(
     (error: AxiosError | any) => {
-      onError(error);
+      onErrorNotfication(error);
     },
     (data: ISignupResponse) => {
-      console.log(data);
-      notifications.show({
-        title: 'Success',
-        autoClose: 5000,
-        message: data.message,
-        color: 'green',
-      });
-
+      onSuccessNotification(data);
       setUser(data.user);
       setStep(3);
-    }
+    },
   );
 
   const onSave = async (values: ISignupForm) => {
@@ -57,46 +47,76 @@ const SignUp = () => {
 
   const form = useForm<ISignupForm>({
     initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
 
     validate: zodResolver(signupSchema),
   });
   return (
-    <Flex
-      gap="md"
-      wrap="wrap"
-      className="flex flex-col items-center justify-center min-h-screen "
-    >
-      <Card
-        padding={20}
-        radius={10}
-        withBorder
-        className="w-80
-      md:w-96
-      shadow-xl
-      
+    <div className="flex min-h-screen flex-col items-center justify-center ">
+      {step !== 3 && (
+        <Card
+          radius={10}
+          withBorder
+          className="w-80
+      border
+      border-gray-100
+      bg-opacity-30
+      bg-clip-padding py-6 shadow-xl backdrop-blur-md 
+      backdrop-filter md:w-[50rem] lg:w-[55rem]
       "
-      >
-        {step !== 3 && (
-          <>
-            <SignupTitle />
-            <SignupForm
-              form={form}
-              onSave={onSave}
-              step={step}
-              setStep={setStep}
-              isLoading={isLoading}
-            />
-          </>
-        )}
-        {step === 3 && user?.id && <Otp userId={user.id} />}
-      </Card>
-    </Flex>
+        >
+          {step !== 3 && (
+            <>
+              <div className="sitems-center flex justify-around space-y-4">
+                <Image
+                  src={CrmDashboardImage}
+                  alt="crm dashboard"
+                  className="my-auto hidden h-full w-80 
+                md:block md:h-96 md:w-96"
+                />
+                <div className="w-full px-1 md:w-[50%] md:px-9">
+                  <SignupTitle />
+                  <SocialAuth />
+                  <SignupForm
+                    form={form}
+                    onSave={onSave}
+                    step={step}
+                    setStep={setStep}
+                    isLoading={isLoading}
+                  />
+                  <div>
+                    <p className="text-sm">
+                      Already signed up login{" "}
+                      <NavLink to={ROUTES.SIGN_IN}>here</NavLink>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </Card>
+      )}
+
+      {step === 3 && user?.id && (
+        <Card
+          radius={10}
+          withBorder
+          className="
+          w-[90%]
+          border
+      border-gray-100
+      bg-opacity-30 bg-clip-padding py-6 shadow-xl 
+      backdrop-blur-md backdrop-filter md:w-[40%] lg:w-[50%]"
+        >
+          <Otp userId={user.id} />
+        </Card>
+      )}
+    </div>
   );
 };
 

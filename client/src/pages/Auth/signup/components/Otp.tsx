@@ -1,51 +1,36 @@
-import React, { useState } from 'react';
-import { Button, PinInput } from '@mantine/core';
-import { VerifyOtpMutation } from '@/pages/Auth/shared/auth.query';
-import { AxiosError } from 'axios';
-import { useAppDispatch } from '@/store/store';
+import React, { useState } from "react";
+import { Button, PinInput } from "@mantine/core";
+import { VerifyOtpMutation } from "@/pages/Auth/shared/auth.query";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/router/constant";
+import { IOtpResponse } from "../../shared/auth.interface";
 import {
-  setAccessToken,
-  setRefreshToken,
-  setUser,
-} from '@/store/slice/auth.slice';
-import { notifications } from '@mantine/notifications';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/router/constant';
+  onErrorNotfication,
+  onSuccessNotification,
+} from "../../shared/auth.utils";
+import { dispatchUser } from "../../shared/userDispatcher";
+import { useAppDispatch } from "@/store/store";
 interface OtpProps {
   userId: string;
 }
 
 const Otp: React.FC<OtpProps> = ({ userId }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [error, setError] = useState(false);
-  const { mutate } = VerifyOtpMutation(
+  const { mutate, isLoading } = VerifyOtpMutation(
     (error: AxiosError | any) => {
       setError(true);
-      notifications.show({
-        title: 'Error',
-        autoClose: 5000,
-        message:
-          error?.response?.data.message ||
-          error?.message ||
-          'An error occurred',
-        color: 'red',
-      });
+      onErrorNotfication(error);
     },
-    (data) => {
+    (data: IOtpResponse) => {
       console.log(data);
-      dispatch(setUser(data.user));
-      dispatch(setAccessToken(data.accessToken));
-      dispatch(setRefreshToken(data.refreshToken));
-      notifications.show({
-        title: 'Success',
-        autoClose: 3000,
-        message: 'OTP verified successfully',
-        color: 'green',
-      });
+      dispatchUser(data, dispatch);
+      onSuccessNotification(data);
       navigate(ROUTES.WORKSPACE);
-    }
+    },
   );
 
   const onCompleted = (otp: number) => {
@@ -55,9 +40,9 @@ const Otp: React.FC<OtpProps> = ({ userId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 space-y-4 ">
+    <div className="flex h-full w-full flex-col items-center justify-center space-y-4 p-4 ">
       <h1 className="text-2xl font-bold">Verify OTP</h1>
-      <p className="text-gray-500 text-sm text-center">
+      <p className="text-center text-sm text-gray-500">
         We have sent a 4 digit OTP to your email address
       </p>
       <PinInput
@@ -69,7 +54,15 @@ const Otp: React.FC<OtpProps> = ({ userId }) => {
         autoFocus
         onComplete={(values) => onCompleted(Number(values))}
       />
-      <Button size="lg" variant="light" className="w-full">
+      {/* TODO: add otp state */}
+      <Button
+        size="lg"
+        onChange={() => {
+          setError(false);
+        }}
+        className="w-full"
+        loading={isLoading}
+      >
         Verify OTP
       </Button>
     </div>

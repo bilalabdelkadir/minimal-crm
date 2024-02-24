@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/es/integration/react';
 import store, { persistor } from './store/store.ts';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { MantineProvider, useMantineTheme } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import theme from './theme.ts';
 import '@mantine/notifications/styles.css';
 import '@mantine/core/styles.css';

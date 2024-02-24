@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -17,6 +18,7 @@ import { JwtGeneratorService } from './jwt/jwt.service';
 import { SigninDto } from './dtos/signin.dto';
 import { MailService } from 'src/mail/mail.service';
 import { error } from 'console';
+import { catchError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +36,6 @@ export class AuthService {
     try {
       const existingUser = await this.userService.findUserByEmailAndPhone(
         data.email,
-        data.phoneNumber,
       );
 
       if (existingUser) {
@@ -74,7 +75,6 @@ export class AuthService {
       }
 
       const saveOtp = await this.userService.saveOtp({
-        phoneNumber: data.phoneNumber,
         otp: emailOtpResponse.otp ? emailOtpResponse.otp : smsOtpResponse.otp,
         email: data.email,
         userId: user.id,
@@ -89,7 +89,7 @@ export class AuthService {
 
       return {
         message: 'User Created Successfully',
-        data: user,
+        user,
       };
     } catch (e) {
       this.logger.error(e);
@@ -112,30 +112,53 @@ export class AuthService {
 
     const accessToken = await this.jwtGeneratorService.generateAccessToken({
       userId: user.id,
+      email: user.email,
     });
     const refreshToken = await this.jwtGeneratorService.generateRefreshToken({
       userId: user.id,
+      email: user.email,
     });
 
+    delete user.password;
+
     return {
-      user: {
-        ...user,
-        password: undefined,
-      },
+      user,
       accessToken,
       refreshToken,
     };
   }
 
   async verifyOtp(data: VeifiyEmailOrPhoneDto) {
-    const otp = await this.userService.vefiyEmailOrPhone(data);
-    if (!otp) {
-      throw new BadRequestException('Error Happend while verifying the otp');
-    } else if (otp.success) {
-      return {
-        fakeJwt: 'fakeJwt',
-        fakeRefreshToken: 'fakeRefreshToken',
-      };
+    try {
+      const otp = await this.userService.vefiyEmailOrPhone(data);
+      if (!otp) {
+        throw new ForbiddenException('Otp Verification Failed');
+      } else if (otp.success) {
+        const user = await this.userService.findUserById(data.userId);
+
+        const accessToken = await this.jwtGeneratorService.generateAccessToken({
+          email: user.email,
+          userId: user.id,
+        });
+        const refreshToken =
+          await this.jwtGeneratorService.generateRefreshToken({
+            email: user.email,
+            userId: user.id,
+          });
+
+        delete user.password;
+
+        return {
+          success: true,
+          message: 'Otp Verified Successfully',
+          user,
+          accessToken,
+          refreshToken,
+        };
+      }
+    } catch (e) {
+      this.logger.error(e);
+      CustomErrorException.handle(e);
     }
   }
 

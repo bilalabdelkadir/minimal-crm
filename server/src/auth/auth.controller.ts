@@ -32,7 +32,7 @@ export class AuthController {
     return this.authService.Signin(data);
   }
 
-  @Get('/me')
+  @Get('me')
   me(@UserId() userId: string) {
     return this.authService.me(userId);
   }
@@ -42,5 +42,10 @@ export class AuthController {
   @Post('verify-otp')
   verifyOtp(@Body() data: VeifiyEmailOrPhoneDto) {
     return this.authService.verifyOtp(data);
+  }
+
+  @Get('request-new-otp')
+  requestNewOtp(@UserId() userId: string) {
+    return this.authService.requestNewOtp(userId);
   }
 }

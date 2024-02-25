@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
+import AccessTokenGuard from './auth/guards/AccessToken.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -45,6 +46,10 @@ import { MailModule } from './mail/mail.module';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: 'APP_GUARD',
+      useClass: AccessTokenGuard,
     },
   ],
 })

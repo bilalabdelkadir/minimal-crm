@@ -7,7 +7,7 @@ import {
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class databaseService
+export class DatabaseService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {

@@ -17,8 +17,7 @@ import { VeifiyEmailOrPhoneDto } from 'src/user/dto/otp.dto';
 import { JwtGeneratorService } from './jwt/jwt.service';
 import { SigninDto } from './dtos/signin.dto';
 import { MailService } from 'src/mail/mail.service';
-import { error } from 'console';
-import { catchError } from 'rxjs';
+import { DatabaseService } from 'src/db/db.service';
 
 @Injectable()
 export class AuthService {
@@ -171,6 +170,45 @@ export class AuthService {
       CustomErrorException.handle(e);
     }
   }
+  async requestNewOtp(userId: string) {
+    try {
+      // TODO: refactor this to use user service
+      const user = await this.userService.findUserById(userId);
+
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      await this.userService.deleteOtpByUserId(userId);
+
+      const emailOtpResponse = await this.sendOtpOverEmail(user.email);
+      let smsOtpResponse;
+
+      if (!emailOtpResponse.otp || !emailOtpResponse.sentOver) {
+        throw new BadRequestException('Error Happend while sending the otp');
+      }
+
+      const saveOtp = await this.userService.saveOtp({
+        otp: emailOtpResponse.otp ? emailOtpResponse.otp : smsOtpResponse.otp,
+        email: user.email,
+        userId: user.id,
+        sentOver: emailOtpResponse.sentOver
+          ? emailOtpResponse.sentOver
+          : smsOtpResponse.sentOver,
+      });
+
+      if (!saveOtp) {
+        throw new BadRequestException('Error Happend while saving the otp');
+      }
+
+      return {
+        message: 'Otp sent successfully',
+        data: user,
+      };
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
 
   private async sendOtpOverEmail(email: string) {
     const otp = otpGenerator(4);
@@ -185,6 +223,8 @@ export class AuthService {
       sentOver: OtpSentTo.EMAIL,
     };
   }
+
+  private async;
 
   private async sendOtpOverSms(phoneNumber: string) {
     const otp = otpGenerator(4);

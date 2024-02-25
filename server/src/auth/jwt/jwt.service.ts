@@ -1,22 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { configConstant } from 'src/config/constants';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtGeneratorService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async generateAccessToken(payload: { userId: string; email: string }) {
     return this.jwtService.sign(payload, {
-      secret: configConstant.accessTokenSecret,
-      expiresIn: configConstant.accessTokenLife,
+      secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+      expiresIn: '1d',
     });
   }
 
   async generateRefreshToken(payload: { userId: string; email: string }) {
     return this.jwtService.sign(payload, {
-      secret: configConstant.refreshTokenSecret,
-      expiresIn: configConstant.refreshTokenLife,
+      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+      expiresIn: '7d',
     });
   }
 }

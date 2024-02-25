@@ -98,34 +98,40 @@ export class AuthService {
   }
 
   async Signin(data: SigninDto) {
-    const user = await this.userService.findUserByEmailAndPhone(data.email);
-    if (!user) {
-      throw new NotFoundException('User not found');
+    try {
+      const user = await this.userService.findUserByEmailAndPhone(data.email);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      const isPasswordValid = await this.hashingService.compareHash(
+        data.password,
+        user.password,
+      );
+      if (!isPasswordValid) {
+        throw new NotFoundException('wrong password');
+      }
+
+      const accessToken = await this.jwtGeneratorService.generateAccessToken({
+        userId: user.id,
+        email: user.email,
+      });
+
+      const refreshToken = await this.jwtGeneratorService.generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+      });
+
+      delete user.password;
+
+      return {
+        user,
+        accessToken,
+        refreshToken,
+      };
+    } catch (e) {
+      console.log(e);
+      CustomErrorException.handle(e);
     }
-    const isPasswordValid = await this.hashingService.compareHash(
-      data.password,
-      user.password,
-    );
-    if (!isPasswordValid) {
-      throw new NotFoundException('wrong password');
-    }
-
-    const accessToken = await this.jwtGeneratorService.generateAccessToken({
-      userId: user.id,
-      email: user.email,
-    });
-    const refreshToken = await this.jwtGeneratorService.generateRefreshToken({
-      userId: user.id,
-      email: user.email,
-    });
-
-    delete user.password;
-
-    return {
-      user,
-      accessToken,
-      refreshToken,
-    };
   }
 
   async verifyOtp(data: VeifiyEmailOrPhoneDto) {

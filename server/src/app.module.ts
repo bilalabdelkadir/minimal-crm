@@ -13,6 +13,7 @@ import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       validationSchema: Joi.object({
         POSTGRES_HOST: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
@@ -24,6 +25,10 @@ import { MailModule } from './mail/mail.module';
         MAIL_HOST: Joi.string().required(),
         MAIL_PORT: Joi.string().required(),
         GEEZ_API_KEY: Joi.string().required(),
+        ACCESS_TOKEN_SECRET: Joi.string().min(5).required(),
+        REFRESH_TOKEN_SECRET: Joi.string().min(5).required(),
+        ACCESS_TOKEN_LIFE: Joi.string().required(),
+        REFRESH_TOKEN_LIFE: Joi.string().required(),
         PORT: Joi.number(),
       }),
     }),

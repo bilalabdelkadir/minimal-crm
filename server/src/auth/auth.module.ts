@@ -6,10 +6,16 @@ import { HashingService } from './hash/hashing.service';
 import { MessageModule } from 'src/message/message.module';
 import { JwtGeneratorService } from './jwt/jwt.service';
 import { MailModule } from 'src/mail/mail.module';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
 
 @Module({
   imports: [UserModule, MessageModule, MailModule],
   controllers: [AuthController],
-  providers: [AuthService, HashingService, JwtGeneratorService],
+  providers: [
+    AuthService,
+    HashingService,
+    JwtGeneratorService,
+    AccessTokenStrategy,
+  ],
 })
 export class AuthModule {}

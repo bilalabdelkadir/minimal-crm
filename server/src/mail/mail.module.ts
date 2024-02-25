@@ -2,21 +2,20 @@ import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { configConstant } from 'src/config/constants';
 
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: configConstant.mailHost,
-        port: configConstant.mailPort,
+        host: process.env.MAIL_HOST,
+        port: parseInt(process.env.MAIL_PORT),
         auth: {
-          user: configConstant.mailEmailUsername,
-          pass: configConstant.mailPassword,
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
         },
       },
       defaults: {
-        from: configConstant.appName,
+        from: process.env.APP_NAME,
       },
       template: {
         dir: process.cwd() + '/src/mail/templates',

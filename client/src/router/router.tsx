@@ -1,14 +1,39 @@
-import { createBrowserRouter } from 'react-router-dom';
-import App from '../App';
+import App from "@/App";
+import { createBrowserRouter } from "react-router-dom";
+import { ROUTES } from "./constant";
+import SignUp from "@/pages/Auth/signup";
+import WorkSpace from "@/pages/workspace";
+import SignIn from "@/pages/Auth/signin";
+import PublicRoutes from "@/layout/PublicRoutes";
+import ProtectedRoutes from "@/layout/ProtectedRoutes";
 
 const Router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
   },
   {
-    path: '/about',
-    element: <h1>About</h1>,
+    element: <PublicRoutes />,
+    children: [
+      {
+        path: ROUTES.SIGN_UP,
+        element: <SignUp />,
+      },
+      {
+        path: ROUTES.SIGN_IN,
+        element: <SignIn />,
+      },
+    ],
+  },
+
+  {
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: ROUTES.WORKSPACE,
+        element: <WorkSpace />,
+      },
+    ],
   },
 ]);
 

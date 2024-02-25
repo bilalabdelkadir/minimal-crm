@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -16,7 +17,7 @@ import { VeifiyEmailOrPhoneDto } from 'src/user/dto/otp.dto';
 import { JwtGeneratorService } from './jwt/jwt.service';
 import { SigninDto } from './dtos/signin.dto';
 import { MailService } from 'src/mail/mail.service';
-import { error } from 'console';
+import { DatabaseService } from 'src/db/db.service';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,6 @@ export class AuthService {
     try {
       const existingUser = await this.userService.findUserByEmailAndPhone(
         data.email,
-        data.phoneNumber,
       );
 
       if (existingUser) {
@@ -74,7 +74,6 @@ export class AuthService {
       }
 
       const saveOtp = await this.userService.saveOtp({
-        phoneNumber: data.phoneNumber,
         otp: emailOtpResponse.otp ? emailOtpResponse.otp : smsOtpResponse.otp,
         email: data.email,
         userId: user.id,
@@ -89,7 +88,7 @@ export class AuthService {
 
       return {
         message: 'User Created Successfully',
-        data: user,
+        user,
       };
     } catch (e) {
       this.logger.error(e);
@@ -97,45 +96,117 @@ export class AuthService {
     }
   }
 
+  async me(userId: string) {
+    return this.userService.findUserById(userId);
+  }
+
   async Signin(data: SigninDto) {
-    const user = await this.userService.findUserByEmailAndPhone(data.email);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const isPasswordValid = await this.hashingService.compareHash(
-      data.password,
-      user.password,
-    );
-    if (!isPasswordValid) {
-      throw new NotFoundException('wrong password');
-    }
+    try {
+      const user = await this.userService.findUserByEmailAndPhone(data.email);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      const isPasswordValid = await this.hashingService.compareHash(
+        data.password,
+        user.password,
+      );
+      if (!isPasswordValid) {
+        throw new NotFoundException('wrong password');
+      }
 
-    const accessToken = await this.jwtGeneratorService.generateAccessToken({
-      userId: user.id,
-    });
-    const refreshToken = await this.jwtGeneratorService.generateRefreshToken({
-      userId: user.id,
-    });
+      const accessToken = await this.jwtGeneratorService.generateAccessToken({
+        userId: user.id,
+        email: user.email,
+      });
 
-    return {
-      user: {
-        ...user,
-        password: undefined,
-      },
-      accessToken,
-      refreshToken,
-    };
+      const refreshToken = await this.jwtGeneratorService.generateRefreshToken({
+        userId: user.id,
+        email: user.email,
+      });
+
+      delete user.password;
+
+      return {
+        user,
+        accessToken,
+        refreshToken,
+      };
+    } catch (e) {
+      console.log(e);
+      CustomErrorException.handle(e);
+    }
   }
 
   async verifyOtp(data: VeifiyEmailOrPhoneDto) {
-    const otp = await this.userService.vefiyEmailOrPhone(data);
-    if (!otp) {
-      throw new BadRequestException('Error Happend while verifying the otp');
-    } else if (otp.success) {
+    try {
+      const otp = await this.userService.vefiyEmailOrPhone(data);
+      if (!otp) {
+        throw new ForbiddenException('Otp Verification Failed');
+      } else if (otp.success) {
+        const user = await this.userService.findUserById(data.userId);
+
+        const accessToken = await this.jwtGeneratorService.generateAccessToken({
+          email: user.email,
+          userId: user.id,
+        });
+        const refreshToken =
+          await this.jwtGeneratorService.generateRefreshToken({
+            email: user.email,
+            userId: user.id,
+          });
+
+        delete user.password;
+
+        return {
+          success: true,
+          message: 'Otp Verified Successfully',
+          user,
+          accessToken,
+          refreshToken,
+        };
+      }
+    } catch (e) {
+      this.logger.error(e);
+      CustomErrorException.handle(e);
+    }
+  }
+  async requestNewOtp(userId: string) {
+    try {
+      // TODO: refactor this to use user service
+      const user = await this.userService.findUserById(userId);
+
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      await this.userService.deleteOtpByUserId(userId);
+
+      const emailOtpResponse = await this.sendOtpOverEmail(user.email);
+      let smsOtpResponse;
+
+      if (!emailOtpResponse.otp || !emailOtpResponse.sentOver) {
+        throw new BadRequestException('Error Happend while sending the otp');
+      }
+
+      const saveOtp = await this.userService.saveOtp({
+        otp: emailOtpResponse.otp ? emailOtpResponse.otp : smsOtpResponse.otp,
+        email: user.email,
+        userId: user.id,
+        sentOver: emailOtpResponse.sentOver
+          ? emailOtpResponse.sentOver
+          : smsOtpResponse.sentOver,
+      });
+
+      if (!saveOtp) {
+        throw new BadRequestException('Error Happend while saving the otp');
+      }
+
       return {
-        fakeJwt: 'fakeJwt',
-        fakeRefreshToken: 'fakeRefreshToken',
+        message: 'Otp sent successfully',
+        data: user,
       };
+    } catch (e) {
+      this.logger.error(e);
     }
   }
 
@@ -152,6 +223,8 @@ export class AuthService {
       sentOver: OtpSentTo.EMAIL,
     };
   }
+
+  private async;
 
   private async sendOtpOverSms(phoneNumber: string) {
     const otp = otpGenerator(4);

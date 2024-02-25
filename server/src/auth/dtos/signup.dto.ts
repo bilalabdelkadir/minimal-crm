@@ -72,18 +72,4 @@ export class SignupDto {
     },
   )
   password: string;
-
-  @ApiProperty({
-    example: '0943656931',
-    description: 'The phone number of the user',
-    required: true,
-  })
-  @MinLength(9, {
-    message: 'Phone number must be at least 9 characters long',
-  })
-  @MaxLength(10, {
-    message: 'Phone number must be at most 10 characters long',
-  })
-  @IsString()
-  phoneNumber: string;
 }

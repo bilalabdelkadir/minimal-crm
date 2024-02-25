@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SignupDto } from 'src/auth/dtos/signup.dto';
-import { databaseService } from 'src/db/db.service';
+import { DatabaseService } from 'src/db/db.service';
 import { OtpDto, VeifiyEmailOrPhoneDto } from './dto/otp.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly db: databaseService) {}
+  constructor(private readonly db: DatabaseService) {}
 
   async createUser(data: SignupDto) {
     const user = await this.db.user.create({
@@ -17,7 +17,6 @@ export class UserService {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        phoneNumber: data.phoneNumber,
         password: data.password,
       },
     });
@@ -56,7 +55,6 @@ export class UserService {
 
     return await this.db.otp.create({
       data: {
-        phoneNumber: data.phoneNumber,
         otp: parseInt(data.otp),
         email: data.email,
         userId: data.userId,
@@ -148,5 +146,13 @@ export class UserService {
         message: 'Email Verified Successfully',
       };
     }
+  }
+
+  async deleteOtpByUserId(userId: string) {
+    return await this.db.otp.deleteMany({
+      where: {
+        userId,
+      },
+    });
   }
 }

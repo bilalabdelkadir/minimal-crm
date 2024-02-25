@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { configConstant } from 'src/config/constants';
 
 @Injectable()
 export class MailService {
@@ -12,12 +11,12 @@ export class MailService {
     this.logger.log(`${message}`);
     await this.mailerService.sendMail({
       to: email,
-      from: `info@${configConstant.appName}.com`,
-      subject: `Confirm your ${configConstant.appName} account.`,
+      from: `info@easy-crm.com`,
+      subject: `Confirm your easy crm account.`,
       html: `
             <div>
               <h1>Hello,</h1>
-              <p>You have been invited to join ${configConstant.appName} on Africa Escape</p>
+              <p>Email confirmation for easy crm.</p>
               <p>${message}</p>
             </div>
             `,

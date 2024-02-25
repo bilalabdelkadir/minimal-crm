@@ -3,10 +3,6 @@ import { OtpSentTo } from '@prisma/client';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class OtpDto {
-  @IsOptional()
-  @IsString()
-  phoneNumber: string;
-
   @IsNumber()
   otp: string;
 

@@ -1,7 +1,14 @@
 import { useMutation } from "react-query";
 import { AxiosError } from "axios";
-import { signinUser, signupUser, verifyOtp } from "@/service/api/auth.api";
+import {
+  signinUser,
+  signupUser,
+  verifyOtp,
+  requestOtp,
+} from "@/service/api/auth.api";
+import { IconExposureMinus1 } from "@tabler/icons-react";
 
+// TODO: fix captilization
 export const SignupMutation = (
   onError?: (error: AxiosError | any) => void,
   onSuccess?: (data: any) => void,
@@ -21,4 +28,11 @@ export const VerifyOtpMutation = (
   onSuccess?: (data: any) => void,
 ) => {
   return useMutation({ mutationFn: verifyOtp, onSuccess, onError });
+};
+
+export const requestOtpMutation = (
+  onError?: (error: AxiosError | any) => void,
+  onSuccess?: (data: any) => void,
+) => {
+  return useMutation({ mutationFn: requestOtp, onSuccess, onError });
 };

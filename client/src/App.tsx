@@ -1,6 +1,5 @@
-import '@mantine/core/styles.css';
-import { Button, Card } from '@mantine/core';
-import { useColorScheme } from '@mantine/hooks';
+import "@mantine/core/styles.css";
+import { Button, Card } from "@mantine/core";
 
 const App = () => {
   return (

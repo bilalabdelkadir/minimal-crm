@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, PinInput } from "@mantine/core";
-import { VerifyOtpMutation } from "@/pages/Auth/shared/auth.query";
+import { VerifyOtpMutation } from "@/pages/auth/shared/auth.query";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/router/constant";

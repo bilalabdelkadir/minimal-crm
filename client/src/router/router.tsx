@@ -1,11 +1,12 @@
 import App from "@/App";
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./constant";
-import SignUp from "@/pages/Auth/signup";
+import SignUp from "@/pages/auth/signup";
 import WorkSpace from "@/pages/workspace";
-import SignIn from "@/pages/Auth/signin";
+import SignIn from "@/pages/auth/signin";
 import PublicRoutes from "@/layout/PublicRoutes";
 import ProtectedRoutes from "@/layout/ProtectedRoutes";
+import RequestOtp from "@/pages/auth/otp";
 
 const Router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const Router = createBrowserRouter([
       {
         path: ROUTES.WORKSPACE,
         element: <WorkSpace />,
+      },
+      {
+        path: ROUTES.REQUEST_OTP,
+        element: <RequestOtp />,
       },
     ],
   },

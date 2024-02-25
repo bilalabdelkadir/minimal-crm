@@ -172,7 +172,6 @@ export class AuthService {
   }
   async requestNewOtp(userId: string) {
     try {
-      // TODO: refactor this to use user service
       const user = await this.userService.findUserById(userId);
 
       if (!user) {
@@ -203,7 +202,7 @@ export class AuthService {
 
       return {
         message: 'Otp sent successfully',
-        data: user,
+        user,
       };
     } catch (e) {
       this.logger.error(e);
@@ -223,8 +222,6 @@ export class AuthService {
       sentOver: OtpSentTo.EMAIL,
     };
   }
-
-  private async;
 
   private async sendOtpOverSms(phoneNumber: string) {
     const otp = otpGenerator(4);

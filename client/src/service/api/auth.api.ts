@@ -5,6 +5,7 @@ import {
   type ISignupForm,
   type ISignupResponse,
 } from "@/pages/Auth/shared/auth.interface";
+import { IUser } from "@/types/User.type";
 import axiosInstance from "@/utils/apiInstance";
 import endpoints from "@/utils/endpoint";
 import { AxiosResponse } from "axios";
@@ -25,4 +26,8 @@ export const verifyOtp = async (
   data: IOtpData,
 ): Promise<AxiosResponse<IOtpResponse>> => {
   return await axiosInstance.post<IOtpResponse>(endpoints.VERIFY_OTP, data);
+};
+
+export const requestOtp = async (): Promise<AxiosResponse<ISignupResponse>> => {
+  return await axiosInstance.get<ISignupResponse>(endpoints.REQUEST_OTP);
 };

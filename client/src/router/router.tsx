@@ -4,6 +4,8 @@ import { ROUTES } from "./constant";
 import SignUp from "@/pages/Auth/signup";
 import WorkSpace from "@/pages/workspace";
 import SignIn from "@/pages/Auth/signin";
+import PublicRoutes from "@/layout/PublicRoutes";
+import ProtectedRoutes from "@/layout/ProtectedRoutes";
 
 const Router = createBrowserRouter([
   {
@@ -11,16 +13,27 @@ const Router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: ROUTES.SIGN_UP,
-    element: <SignUp />,
+    element: <PublicRoutes />,
+    children: [
+      {
+        path: ROUTES.SIGN_UP,
+        element: <SignUp />,
+      },
+      {
+        path: ROUTES.SIGN_IN,
+        element: <SignIn />,
+      },
+    ],
   },
+
   {
-    path: ROUTES.SIGN_IN,
-    element: <SignIn />,
-  },
-  {
-    path: ROUTES.WORKSPACE,
-    element: <WorkSpace />,
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: ROUTES.WORKSPACE,
+        element: <WorkSpace />,
+      },
+    ],
   },
 ]);
 

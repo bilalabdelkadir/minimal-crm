@@ -97,6 +97,10 @@ export class AuthService {
     }
   }
 
+  async me(userId: string) {
+    return this.userService.findUserById(userId);
+  }
+
   async Signin(data: SigninDto) {
     try {
       const user = await this.userService.findUserByEmailAndPhone(data.email);

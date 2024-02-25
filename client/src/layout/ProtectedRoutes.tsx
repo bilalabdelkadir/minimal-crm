@@ -2,14 +2,19 @@ import { Navigate, Outlet } from "react-router-dom";
 import { ROUTES } from "@/router/constant";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import axios from "axios";
+import RequestOtp from "@/pages/auth/otp";
 
 const ProtectedRoutes = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const auth = useSelector((state: RootState) => state.auth);
 
-  if (!user) {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${auth.accessToken}`;
+
+  if (!auth.user) {
     return <Navigate to={ROUTES.SIGN_IN} />;
   }
-  return <Outlet />;
+
+  return auth.user.isEmailVerified ? <Outlet /> : <RequestOtp />;
 };
 
 export default ProtectedRoutes;

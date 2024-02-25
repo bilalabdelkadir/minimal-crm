@@ -16,4 +16,5 @@ export const ROUTES = {
   SETTINGS: "/app/settings",
   USER_MANAGEMENT: "/app/user-management",
   PROFILE: "/app/profile",
+  REQUEST_OTP: "/app/request-otp",
 };

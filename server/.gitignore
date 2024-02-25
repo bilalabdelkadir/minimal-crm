@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# Secret file
+
+
 # Logs
 logs
 *.log
@@ -11,12 +14,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 # OS
-.env
 .DS_Store
-/server/.env
-/server/.env.local
-/client/.env
-/client/.env.local
 
 # Tests
 /coverage
@@ -24,6 +22,7 @@ lerna-debug.log*
 
 # IDEs and editors
 /.idea
+.env
 .project
 .classpath
 .c9/

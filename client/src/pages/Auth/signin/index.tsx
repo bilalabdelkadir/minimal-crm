@@ -4,8 +4,6 @@ import SocialAuth from "../signup/components/SocialAuth";
 import { type ISigninForm } from "../shared/auth.interface";
 import { signinSchema } from "../shared/auth.schema";
 import { useForm, zodResolver } from "@mantine/form";
-import SignInForm from "./components/Signin.form";
-import SigninTitle from "./components/SigninTitle";
 import { ROUTES } from "@/router/constant";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/store/store";
@@ -16,6 +14,8 @@ import {
   onErrorNotfication,
   onSuccessNotification,
 } from "../shared/auth.utils";
+import SigninTitle from "./components/SigninTitle";
+import SignInForm from "./components/Signin.form";
 
 const SignIn = () => {
   const dispatch = useAppDispatch();

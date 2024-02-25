@@ -1,4 +1,3 @@
-// dispatchers.ts
 import { useAppDispatch } from "../../../store/store";
 import {
   setUser,

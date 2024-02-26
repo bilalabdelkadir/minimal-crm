@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CLOUDINARY } from './constants/fileupload.constants';
 import { v2 } from 'cloudinary';
 
-export const Fileupload = {
+export const FileUploadProvider = {
   provide: CLOUDINARY,
   useFactory: (): void => {
     v2.config({

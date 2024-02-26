@@ -11,6 +11,7 @@ import { MessageModule } from './message/message.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
 import { FileuploadModule } from './fileupload/fileupload.module';
+import { WorkspacesModule } from './workspaces/workspaces.module';
 import AccessTokenGuard from './auth/guards/AccessToken.guard';
 @Module({
   imports: [
@@ -31,6 +32,9 @@ import AccessTokenGuard from './auth/guards/AccessToken.guard';
         REFRESH_TOKEN_SECRET: Joi.string().min(5).required(),
         ACCESS_TOKEN_LIFE: Joi.string().required(),
         REFRESH_TOKEN_LIFE: Joi.string().required(),
+        CLD_CLOUD_NAME: Joi.string().required(),
+        CLD_API_KEY: Joi.string().required(),
+        CLD_API_SECRET: Joi.string().required(),
         PORT: Joi.number(),
       }),
     }),
@@ -43,6 +47,7 @@ import AccessTokenGuard from './auth/guards/AccessToken.guard';
     MessageModule,
     MailModule,
     FileuploadModule,
+    WorkspacesModule,
   ],
   providers: [
     {

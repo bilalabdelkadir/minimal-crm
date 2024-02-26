@@ -29,6 +29,10 @@ model User {
   deletedAt                DateTime?   @map("deleted_at")
   associatedWorkspaces     Workspace[] @relation("associatedWorkspaces")
   otp                      Otp[]       @relation("otp")
+  ownedWorkspaces          Workspace[] @relation("ownedBy")
+  createdWorkdpaces        Workspace[] @relation("createdBy")
+  defaultWorkspace         Workspace?  @relation("defaultWorkspace", fields: [defaultWorkspaceId], references: [id])
+  defaultWorkspaceId       String?     @map("default_workspace_id")
 
   @@index([email, phoneNumber, createdAt])
   @@map("users")
@@ -56,16 +60,22 @@ model Otp {
 }
 
 model Workspace {
-  id          String    @id @default(uuid())
-  name        String
-  description String?
-  logo        Image?    @relation("logo", fields: [logoId], references: [id])
-  logoId      String?   @map("logo_id")
-  website     String?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
-  users       User[]    @relation("associatedWorkspaces")
+  id               String    @id @default(uuid())
+  name             String
+  description      String?
+  logo             Image?    @relation("logo", fields: [logoId], references: [id])
+  logoId           String?   @map("logo_id")
+  website          String?
+  country          String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt        DateTime? @map("deleted_at")
+  users            User[]    @relation("associatedWorkspaces")
+  createdBy        User      @relation("createdBy", fields: [createdById], references: [id])
+  createdById      String    @map("created_by")
+  ownedBy          User      @relation("ownedBy", fields: [ownedById], references: [id])
+  ownedById        String    @map("owned_by")
+  defaultWorkspace User[]    @relation("defaultWorkspace")
 
   @@map("workspaces")
 }

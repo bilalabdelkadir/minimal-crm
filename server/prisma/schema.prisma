@@ -21,7 +21,8 @@ model User {
   isPhoneVerified          Boolean     @default(false) @map("is_phone_verified")
   isEmailVerified          Boolean     @default(false) @map("is_email_verified")
   isMultiFactorAuthEnabled Boolean     @default(false) @map("is_multi_factor_auth_enabled")
-  profilePicture           String?     @map("profile_picture")
+  profilePicture           Image?      @relation("profilePicture", fields: [profilePictureId], references: [id])
+  profilePictureId         String?     @map("profile_picture_id")
   refreshToken             String?     @map("refresh_token")
   createdAt                DateTime    @default(now()) @map("created_at")
   updatedAt                DateTime    @default(now()) @updatedAt @map("updated_at")
@@ -58,7 +59,8 @@ model Workspace {
   id          String    @id @default(uuid())
   name        String
   description String?
-  logo        String?
+  logo        Image?    @relation("logo", fields: [logoId], references: [id])
+  logoId      String?   @map("logo_id")
   website     String?
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
@@ -66,4 +68,16 @@ model Workspace {
   users       User[]    @relation("associatedWorkspaces")
 
   @@map("workspaces")
+}
+
+model Image {
+  id        String      @id @default(uuid())
+  url       String
+  publicId  String      @map("public_id")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  Workspace Workspace[] @relation("logo")
+  User      User[]      @relation("profilePicture")
+
+  @@map("images")
 }

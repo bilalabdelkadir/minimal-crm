@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
 import { FileuploadModule } from './fileupload/fileupload.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { RolesModule } from './roles/roles.module';
 import AccessTokenGuard from './auth/guards/AccessToken.guard';
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import AccessTokenGuard from './auth/guards/AccessToken.guard';
     MailModule,
     FileuploadModule,
     WorkspacesModule,
+    RolesModule,
   ],
   providers: [
     {

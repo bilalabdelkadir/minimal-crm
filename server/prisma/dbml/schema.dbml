@@ -26,6 +26,47 @@ Table users {
   defaultWorkspaceId String
 }
 
+Table roles {
+  id String [pk]
+  roleName String [not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  workspaceId String [not null]
+  permissions permissions [not null]
+
+  indexes {
+    (roleName, workspaceId) [unique]
+  }
+}
+
+Table permissions {
+  id String [pk]
+  moduleName String [not null]
+  create Boolean [not null, default: false]
+  read Boolean [not null, default: false]
+  update Boolean [not null, default: false]
+  delete Boolean [not null, default: false]
+  print Boolean [not null, default: false]
+  export Boolean [not null, default: false]
+  import Boolean [not null, default: false]
+  manage Boolean [not null, default: false]
+  approve Boolean [not null, default: false]
+  reject Boolean [not null, default: false]
+  download Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  role roles [not null]
+  roleId String [not null]
+  workspaceId String [not null]
+
+  indexes {
+    (moduleName, roleId, workspaceId) [unique]
+  }
+}
+
 Table otps {
   id String [pk]
   otp Int [not null]
@@ -85,6 +126,8 @@ Enum OtpSentTo {
 Ref: users.profilePictureId > images.id
 
 Ref: users.defaultWorkspaceId > workspaces.id
+
+Ref: permissions.roleId > roles.id
 
 Ref: otps.userId > users.id
 

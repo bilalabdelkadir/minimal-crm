@@ -182,6 +182,8 @@ export class RolesService {
       if (!role) {
         throw new NotFoundException('there is no role with this name');
       }
+
+      return role;
     } catch (error) {
       this.logger.log(error);
       CustomErrorException.handle(error);

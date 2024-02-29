@@ -49,6 +49,7 @@ model Role {
   permissions Permission[]
 
   @@unique([roleName, workspaceId])
+  @@index([roleName, workspaceId])
   @@map("roles")
 }
 
@@ -78,6 +79,7 @@ model Permission {
   workspaceId String              @map("workspace_id")
 
   @@unique([moduleName, roleId])
+  @@index([moduleName, workspaceId])
   @@map("permissions")
 }
 
@@ -120,6 +122,7 @@ model Workspace {
   ownedById        String    @map("owned_by")
   defaultWorkspace User[]    @relation("defaultWorkspace")
 
+  @@index([name])
   @@map("workspaces")
 }
 
@@ -129,8 +132,8 @@ model Image {
   publicId  String      @map("public_id")
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
-  Workspace Workspace[] @relation("logo")
-  User      User[]      @relation("profilePicture")
+  workspace Workspace[] @relation("logo")
+  user      User[]      @relation("profilePicture")
 
   @@map("images")
 }

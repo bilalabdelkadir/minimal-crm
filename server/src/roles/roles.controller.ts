@@ -9,7 +9,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
-import { Public } from 'src/auth/decorator/publicRoute.decorator';
 import { WORKSPACEID } from 'src/utils/header.constant';
 import { UserId } from 'src/auth/decorator/userId.decorator';
 import { CreateRoleDto, UpdateRoleDto } from './dto/create-role.dto';

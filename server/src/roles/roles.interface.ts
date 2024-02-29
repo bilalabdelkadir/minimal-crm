@@ -1,0 +1,13 @@
+export enum PermissionActions {
+  CREATE = 'CREATE',
+  READ = 'READ',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+  PRINT = 'PRINT',
+  EXPORT = 'EXPORT',
+  IMPORT = 'IMPORT',
+  MANAGE = 'MANAGE',
+  APPROVE = 'APPROVE',
+  REJECT = 'REJECT',
+  DOWNLOAD = 'DOWNLOAD',
+}

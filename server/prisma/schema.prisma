@@ -52,29 +52,32 @@ model Role {
   @@map("roles")
 }
 
+enum PermissionActions {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  PRINT
+  EXPORT
+  IMPORT
+  MANAGE
+  APPROVE
+  REJECT
+  DOWNLOAD
+}
+
 model Permission {
-  id         String  @id @default(uuid())
-  moduleName String
-  create     Boolean @default(false)
-  read       Boolean @default(false)
-  update     Boolean @default(false)
-  delete     Boolean @default(false)
-  print      Boolean @default(false)
-  export     Boolean @default(false)
-  import     Boolean @default(false)
-  manage     Boolean @default(false)
-  approve    Boolean @default(false)
-  reject     Boolean @default(false)
-  download   Boolean @default(false)
+  id          String              @id @default(uuid())
+  moduleName  String
+  actions     PermissionActions[]
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @default(now()) @updatedAt @map("updated_at")
+  deletedAt   DateTime?           @map("deleted_at")
+  role        Role                @relation(fields: [roleId], references: [id])
+  roleId      String              @map("role_id")
+  workspaceId String              @map("workspace_id")
 
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
-  role        Role      @relation(fields: [roleId], references: [id])
-  roleId      String    @map("role_id")
-  workspaceId String    @map("workspace_id")
-
-  @@unique([moduleName, roleId, workspaceId])
+  @@unique([moduleName, roleId])
   @@map("permissions")
 }
 

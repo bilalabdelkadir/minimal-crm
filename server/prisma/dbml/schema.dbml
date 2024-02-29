@@ -44,17 +44,7 @@ Table roles {
 Table permissions {
   id String [pk]
   moduleName String [not null]
-  create Boolean [not null, default: false]
-  read Boolean [not null, default: false]
-  update Boolean [not null, default: false]
-  delete Boolean [not null, default: false]
-  print Boolean [not null, default: false]
-  export Boolean [not null, default: false]
-  import Boolean [not null, default: false]
-  manage Boolean [not null, default: false]
-  approve Boolean [not null, default: false]
-  reject Boolean [not null, default: false]
-  download Boolean [not null, default: false]
+  actions PermissionActions[] [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   deletedAt DateTime
@@ -63,7 +53,7 @@ Table permissions {
   workspaceId String [not null]
 
   indexes {
-    (moduleName, roleId, workspaceId) [unique]
+    (moduleName, roleId) [unique]
   }
 }
 
@@ -116,6 +106,20 @@ Table images {
 Table associatedWorkspaces {
   associatedworkspacesId String [ref: > workspaces.id]
   usersId String [ref: > users.id]
+}
+
+Enum PermissionActions {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  PRINT
+  EXPORT
+  IMPORT
+  MANAGE
+  APPROVE
+  REJECT
+  DOWNLOAD
 }
 
 Enum OtpSentTo {

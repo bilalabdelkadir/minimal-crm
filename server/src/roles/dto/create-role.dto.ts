@@ -1,3 +1,5 @@
+import { PartialType } from '@nestjs/swagger';
+import { PermissionActions } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -45,39 +47,9 @@ export class PermissionDto {
   @IsString()
   moduleName: ModuleName;
 
-  @IsBoolean()
-  manage: boolean;
-
-  @IsBoolean()
-  read: boolean;
-
-  @IsBoolean()
-  create: boolean;
-
-  @IsBoolean()
-  update: boolean;
-
-  @IsBoolean()
-  delete: boolean;
-
-  @IsBoolean()
-  export: boolean;
-
-  @IsBoolean()
-  import: boolean;
-
-  @IsBoolean()
-  print: boolean;
-
-  @IsBoolean()
-  approve: boolean;
-
-  @IsBoolean()
-  aprrove: boolean;
-
-  @IsBoolean()
-  reject: boolean;
-
-  @IsBoolean()
-  download: boolean;
+  @IsArray()
+  @IsString({ each: true })
+  permissions: PermissionActions[];
 }
+
+export class UpdateRoleDto extends PartialType(CreateRoleDto) {}

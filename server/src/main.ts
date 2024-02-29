@@ -20,8 +20,10 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle('AfricEscape - API')
       .setDescription('Backend API for AfricEscape.')
-      .addBearerAuth()
-      .addCookieAuth('refresh-token')
+      .addBearerAuth({
+        type: 'http',
+        'x-tokenName': 'AccessToken',
+      })
       .setVersion('v1.0')
       .build();
 

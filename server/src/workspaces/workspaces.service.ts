@@ -73,6 +73,29 @@ export class WorkspacesService {
     }
   }
 
+  async findAllWorkspaces() {
+    try {
+      const workspaces = await this.db.workspace.findMany({
+        include: {
+          logo: true,
+          ownedBy: true,
+          createdBy: true,
+          users: {
+            select: {
+              id: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      return workspaces;
+    } catch (e) {
+      this.logger.error(e);
+      CustomErrorException.handle(e);
+    }
+  }
+
   async findWorkspaceById(id: string) {
     try {
       const workspace = await this.db.workspace.findUnique({

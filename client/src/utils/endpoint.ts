@@ -3,6 +3,7 @@ const endpoints = {
   SIGNIN: "/auth/sign-in",
   VERIFY_OTP: "/auth/verify-otp",
   REQUEST_OTP: "/auth/request-new-otp",
+  CREATE_WORKSPACE: "/workspaces",
 };
 
 export default endpoints;

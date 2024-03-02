@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UserService } from 'src/user/user.service';
@@ -12,6 +12,7 @@ export class AccessTokenStrategy extends PassportStrategy(
   Strategy,
   'accessToken',
 ) {
+  logger = new Logger(AccessTokenStrategy.name);
   constructor(
     private readonly configService: ConfigService,
     private readonly userService: UserService,
@@ -21,6 +22,7 @@ export class AccessTokenStrategy extends PassportStrategy(
         (request: Request) => {
           const [type, accessToken] =
             request.headers.authorization?.split(' ') ?? [];
+          this.logger.log('the accesstoken is', accessToken);
           return accessToken;
         },
       ]),

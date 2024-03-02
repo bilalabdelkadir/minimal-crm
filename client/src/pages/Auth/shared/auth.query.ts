@@ -6,7 +6,6 @@ import {
   verifyOtp,
   requestOtp,
 } from "@/service/api/auth.api";
-import { IconExposureMinus1 } from "@tabler/icons-react";
 
 // TODO: fix captilization
 export const SignupMutation = (

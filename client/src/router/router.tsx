@@ -7,6 +7,7 @@ import SignIn from "@/pages/auth/signin";
 import PublicRoutes from "@/layout/PublicRoutes";
 import ProtectedRoutes from "@/layout/ProtectedRoutes";
 import RequestOtp from "@/pages/auth/otp";
+import AppLayout from "@/layout/AppLayout";
 
 const Router = createBrowserRouter([
   {
@@ -30,6 +31,20 @@ const Router = createBrowserRouter([
   {
     element: <ProtectedRoutes />,
     children: [
+      {
+        path: ROUTES.APP,
+        element: <AppLayout />,
+        children: [
+          {
+            path: "/app/test1",
+            element: <h1>this is from test</h1>,
+          },
+          {
+            path: "/app/test2",
+            element: <h1>this is from test 2</h1>,
+          },
+        ],
+      },
       {
         path: ROUTES.WORKSPACE,
         element: <WorkSpace />,

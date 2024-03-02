@@ -5,7 +5,6 @@ import {
   type ISignupForm,
   type ISignupResponse,
 } from "@/pages/Auth/shared/auth.interface";
-import { IUser } from "@/types/User.type";
 import axiosInstance from "@/utils/apiInstance";
 import endpoints from "@/utils/endpoint";
 import { AxiosResponse } from "axios";

@@ -21,8 +21,8 @@ export class WorkspacesController {
   @UseInterceptors(FileInterceptor('logo'))
   async createWorkspace(
     @Body() createWorkspaceDto: CreateWorkspaceDto,
-    @UploadedFile() logo: Express.Multer.File,
     @UserId() userId: string,
+    @UploadedFile() logo?: Express.Multer.File,
   ) {
     return await this.workspacesService.createWorkspace(
       createWorkspaceDto,
@@ -31,6 +31,10 @@ export class WorkspacesController {
     );
   }
 
+  @Get()
+  async getWorkspaces(@UserId() userId: string) {
+    return await this.workspacesService.findAllWorkspaces(userId);
+  }
   @Get(':id')
   async getWorkspace(@Param('id') id: string) {
     return await this.workspacesService.findWorkspaceById(id);

@@ -1,5 +1,5 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
+import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 import {
   persistReducer,
   persistStore,
@@ -9,17 +9,17 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { rootReducer } from './slice/root.slice';
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { rootReducer } from "./slice/root.slice";
 
 const persistedReducer = persistReducer(
   {
-    key: 'main',
+    key: "main",
     storage,
-    whitelist: ['auth'],
+    whitelist: ["auth", "workspaceInfo"],
   },
-  rootReducer
+  rootReducer,
 );
 const store = configureStore({
   reducer: persistedReducer,
@@ -33,7 +33,7 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-export type RootState = Omit<ReturnType<typeof store.getState>, '_persist'>;
+export type RootState = Omit<ReturnType<typeof store.getState>, "_persist">;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch: () => AppDispatch = useDispatch;
 

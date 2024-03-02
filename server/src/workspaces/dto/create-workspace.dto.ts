@@ -8,7 +8,7 @@ export class CreateWorkspaceDto {
   })
   @IsNotEmpty()
   @IsString()
-  name?: string;
+  name: string;
 
   @ApiProperty({
     example: 'This is my workspace',

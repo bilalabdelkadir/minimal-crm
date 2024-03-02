@@ -3,6 +3,7 @@ import { DatabaseService } from 'src/db/db.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { CustomErrorException } from 'src/utils/errorHandler';
 import { FileuploadService } from 'src/fileupload/fileupload.service';
+import { string } from 'joi';
 
 @Injectable()
 export class WorkspacesService {
@@ -73,17 +74,33 @@ export class WorkspacesService {
     }
   }
 
-  async findAllWorkspaces() {
+  async findAllWorkspaces(userId: string) {
     try {
       const workspaces = await this.db.workspace.findMany({
-        include: {
-          logo: true,
-          ownedBy: true,
-          createdBy: true,
+        where: {
           users: {
+            some: {
+              id: userId,
+            },
+          },
+        },
+        include: {
+          logo: {
             select: {
               id: true,
-              email: true,
+              url: true,
+            },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          _count: {
+            select: {
+              users: true,
             },
           },
         },

@@ -9,6 +9,11 @@ import {
   ScrollArea,
   ModalBody,
   Image,
+  Space,
+  Avatar,
+  Card,
+  Group,
+  Badge,
 } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { IconNewSection } from "@tabler/icons-react";
@@ -23,25 +28,45 @@ import {
   onErrorNotfication,
   onSuccessNotification,
 } from "../auth/shared/auth.utils";
-import { createWorkspaceMutation } from "./query/workspace.query";
+import {
+  createWorkspaceMutation,
+  fetchWorkspacesQuery,
+} from "./query/workspace.query";
+import { RootState, useAppDispatch } from "@/store/store";
+import {
+  setSelectedWorkspace,
+  setWorkspaces,
+} from "@/store/slice/workspaces.slice";
+import { IWorkspaceResponse } from "@/types/Workspace.type";
+import { useSelector } from "react-redux";
 
 const WorkSpace = () => {
+  const isMobile = useMediaQuery("(max-width: 35em)");
   const [opened, { open, close }] = useDisclosure(false);
+  const dispatch = useAppDispatch();
 
   const [uploadedPicture, setUploadedPicture] = useState<FileWithPath[] | null>(
     null,
   );
 
-  useEffect(() => {
-    console.log(uploadedPicture?.[0].path);
-  }, [uploadedPicture]);
+  const selectedWorkspace = useSelector(
+    (state: RootState) => state.workspaceInfo.selectedWorkspace,
+  );
 
   const handleUpload = (file: FileWithPath[]) => {
     setUploadedPicture(file);
     form.setFieldValue("logo", file[0]);
   };
 
-  const isMobile = useMediaQuery("(max-width: 35em)");
+  const { data: workspaces } = fetchWorkspacesQuery(["workspaces"]);
+
+  useEffect(() => {
+    dispatch(setWorkspaces(workspaces || []));
+  }, [workspaces]);
+
+  const onSelectedWorkspace = (workspace: IWorkspaceResponse) => {
+    dispatch(setSelectedWorkspace(workspace));
+  };
 
   const form = useForm<IWorkspaceForm>({
     initialValues: {
@@ -89,17 +114,103 @@ const WorkSpace = () => {
 
   return (
     <>
-      <Container>
-        <Stack h={"100vh"} mt={"md"} justify="flex-start" align="center">
-          <Button
-            size="md"
-            className="w-[30rem]"
-            variant="outline"
-            leftSection={<IconNewSection size={24} />}
-            onClick={open}
-          >
-            Create Workspace
-          </Button>
+      <Container size="lg">
+        <Stack justify="flex-start" align="center">
+          <div className="rounded-sm pt-4">
+            <Title
+              order={isMobile ? 2 : 1}
+              className="uppercase text-purple-700"
+            >
+              EasyPeasy CRM
+            </Title>
+          </div>
+          <div className="mt-1 flex min-h-[70vh] w-full items-center justify-between md:mt-4 md:gap-3">
+            <div className="h-full w-full border-2 border-gray-500 p-2 md:w-[60%] md:p-8">
+              <h1 className="text-3xl font-bold md:text-4xl ">
+                Create a new Easy-crm workspace
+              </h1>
+              <p className="text-base md:text-lg">
+                Easy-crm gives your team a home – a place where they manage your
+                sales and company. To create a new workspace, click on the
+                button below.
+              </p>
+              <Button
+                onClick={open}
+                leftSection={<IconNewSection size={24} />}
+                fullWidth
+                className="my-4"
+                size={isMobile ? "md" : "lg"}
+              >
+                Create a workspace
+              </Button>
+              <p className="text-xs">
+                By continuing, you’re agreeing to our main services agreement,
+                user terms of service and Slack supplemental Terms. Additional
+                disclosures are available in our privacy policy and cookie
+                policy.
+              </p>
+            </div>
+            <div className="hidden h-[80%] w-[70%]  border-4 px-10  md:flex">
+              <Image
+                src={"https://gapsystudio.com/storage/2015/oblozka.png"}
+                alt="dashboard picture"
+                className="rounded-lg"
+              />
+            </div>
+          </div>
+          <p className="text-center">OR</p>
+          <p className="w-[100wh] text-center text-lg font-bold text-gray-700">
+            select a workspace
+          </p>
+          <div className="flex w-full flex-wrap justify-start gap-2 border-2 border-gray-600 bg-white shadow-md md:px-8 md:py-10">
+            {workspaces?.map((workspace) => (
+              <Card
+                key={workspace.id}
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+                w={isMobile ? "100%" : "30%"}
+              >
+                <Card.Section>
+                  <Image
+                    src={
+                      workspace.logo?.url ||
+                      "https://www.ncenet.com/wp-content/uploads/2020/04/No-image-found.jpg"
+                    }
+                    height={160}
+                    alt={workspace.name}
+                    className="h-40 w-full rounded-md object-contain"
+                  />
+                </Card.Section>
+                <Group justify="space-between" mt="md" mb="xs">
+                  <Text fw={500}>{workspace.name}</Text>
+
+                  <div>
+                    <Text fw={400} size="xs">
+                      owned by
+                    </Text>
+                    <Badge color="green">{workspace.createdBy.firstName}</Badge>
+                  </div>
+                </Group>
+                <Text size="sm" c="dimmed">
+                  {workspace.description}
+                </Text>
+                <Button
+                  color="dark"
+                  fullWidth
+                  mt="md"
+                  radius="md"
+                  disabled={selectedWorkspace?.id === workspace.id}
+                  onClick={() => onSelectedWorkspace(workspace)}
+                >
+                  {selectedWorkspace?.id === workspace.id
+                    ? "Selected"
+                    : "Select"}
+                </Button>
+              </Card>
+            ))}
+          </div>
         </Stack>
       </Container>
       <Modal

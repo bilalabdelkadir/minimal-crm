@@ -4,6 +4,7 @@ const endpoints = {
   VERIFY_OTP: "/auth/verify-otp",
   REQUEST_OTP: "/auth/request-new-otp",
   CREATE_WORKSPACE: "/workspaces",
+  FETCH_WORKSPACE: "/workspaces",
 };
 
 export default endpoints;

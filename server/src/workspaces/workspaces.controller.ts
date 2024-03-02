@@ -32,8 +32,8 @@ export class WorkspacesController {
   }
 
   @Get()
-  async getWorkspaces() {
-    return await this.workspacesService.findAllWorkspaces();
+  async getWorkspaces(@UserId() userId: string) {
+    return await this.workspacesService.findAllWorkspaces(userId);
   }
   @Get(':id')
   async getWorkspace(@Param('id') id: string) {

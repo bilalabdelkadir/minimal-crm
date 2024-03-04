@@ -101,11 +101,120 @@ Table images {
   updatedAt DateTime [not null]
   workspace workspaces [not null]
   user users [not null]
+  companyLogo companies [not null]
+  contactProfile contacts [not null]
+}
+
+Table Tag {
+  id String [pk]
+  name String [not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  workspaceId String [not null]
+  contact contacts [not null]
+  company companies [not null]
+
+  indexes {
+    (name, workspaceId) [unique]
+  }
+}
+
+Table companies {
+  id String [pk]
+  name String [not null]
+  email String [not null]
+  secondaryEmail String
+  workspaceId String [not null]
+  phone String
+  secondaryPhone String
+  website String
+  preferredContactMethod PreferredContactMethod [not null]
+  addresses addresses [not null]
+  logo images
+  logoId String
+  referalSource sources [not null]
+  preferredCurrency String
+  preferredLanguage String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  isDeleted Boolean [not null, default: false]
+  contacts contacts [not null]
+  tags Tag [not null]
+
+  indexes {
+    (name, workspaceId) [unique]
+  }
+}
+
+Table contacts {
+  id String [pk]
+  firstName String [not null]
+  lastName String
+  email String
+  phone String
+  secondaryEmail String
+  workspaceId String [not null]
+  secondaryPhone String
+  contactProfile images
+  profileId String
+  referalSource sources [not null]
+  preferredCurrency String
+  preferredLanguage String
+  associatedCompany companies
+  companyId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  deletedAt DateTime
+  isDeleted Boolean [not null, default: false]
+  tags Tag [not null]
+}
+
+Table addresses {
+  id String [pk]
+  workspaceId String [not null]
+  street String
+  city String
+  country String
+  company companies
+  companyId String
+}
+
+Table sources {
+  id String [pk]
+  name String [not null]
+  workspaceId String [not null]
+  sourceType SourceType [not null]
+  company companies
+  companyId String
+  contact contacts
+  contactId String
+
+  indexes {
+    (name, workspaceId) [unique]
+  }
 }
 
 Table associatedWorkspaces {
   associatedworkspacesId String [ref: > workspaces.id]
   usersId String [ref: > users.id]
+}
+
+Table contact_tags {
+  contactId String [ref: > contacts.id]
+  tagsId String [ref: > Tag.id]
+}
+
+Table company_tags {
+  companyId String [ref: > companies.id]
+  tagsId String [ref: > Tag.id]
+}
+
+Table referal_sources {
+  referalsourceId String [ref: > sources.id]
+  referalsourceId String [ref: > sources.id]
 }
 
 Enum PermissionActions {
@@ -127,6 +236,17 @@ Enum OtpSentTo {
   PHONE
 }
 
+Enum PreferredContactMethod {
+  Email
+  Phone
+}
+
+Enum SourceType {
+  ReferalSource
+  LeadSource
+  CompaignSource
+}
+
 Ref: users.profilePictureId > images.id
 
 Ref: users.defaultWorkspaceId > workspaces.id
@@ -140,3 +260,15 @@ Ref: workspaces.logoId > images.id
 Ref: workspaces.createdById > users.id
 
 Ref: workspaces.ownedById > users.id
+
+Ref: companies.logoId > images.id
+
+Ref: contacts.profileId > images.id
+
+Ref: contacts.companyId > companies.id
+
+Ref: addresses.companyId > companies.id
+
+Ref: sources.companyId > companies.id
+
+Ref: sources.contactId > contacts.id

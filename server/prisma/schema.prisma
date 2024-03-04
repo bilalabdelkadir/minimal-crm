@@ -127,13 +127,121 @@ model Workspace {
 }
 
 model Image {
-  id        String      @id @default(uuid())
-  url       String
-  publicId  String      @map("public_id")
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @updatedAt @map("updated_at")
-  workspace Workspace[] @relation("logo")
-  user      User[]      @relation("profilePicture")
+  id             String      @id @default(uuid())
+  url            String
+  publicId       String      @map("public_id")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  workspace      Workspace[] @relation("logo")
+  user           User[]      @relation("profilePicture")
+  companyLogo    Company[]   @relation("company_logo")
+  contactProfile Contact[]   @relation("contact_profile")
 
   @@map("images")
+}
+
+model Tag {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  workspaceId String    @map("workspace_id")
+  contact     Contact[] @relation("contact_tags")
+  company     Company[] @relation("company_tags")
+
+  @@unique([name, workspaceId])
+  @@index([name])
+}
+
+enum PreferredContactMethod {
+  Email
+  Phone
+}
+
+model Company {
+  id                     String                 @id @default(uuid())
+  name                   String
+  email                  String
+  secondaryEmail         String?                @map("secondary_email")
+  workspaceId            String                 @map("workspace_id")
+  phone                  String?
+  secondaryPhone         String?                @map("secondary_phone")
+  website                String?
+  preferredContactMethod PreferredContactMethod @map("preferred_contact_method")
+  addresses              Address[]
+  logo                   Image?                 @relation("company_logo", fields: [logoId], references: [id])
+  logoId                 String?                @map("logo_id")
+  referalSource          Source[]               @relation("referal_sources")
+  preferredCurrency      String?                @map("preferred_currency")
+  preferredLanguage      String?                @map("preferred_language")
+  createdAt              DateTime               @default(now()) @map("created_at")
+  updatedAt              DateTime               @default(now()) @updatedAt @map("updated_at")
+  deletedAt              DateTime?              @map("deleted_at")
+  isDeleted              Boolean                @default(false) @map("is_deleted")
+  contacts               Contact[]
+  tags                   Tag[]                  @relation("company_tags")
+
+  @@unique([name, workspaceId])
+  @@index([name])
+  @@map("companies")
+}
+
+model Contact {
+  id                String    @id @default(uuid())
+  firstName         String    @map("first_name")
+  lastName          String?   @map("last_name")
+  email             String?
+  phone             String?
+  secondaryEmail    String?   @map("secondary_email")
+  workspaceId       String    @map("workspace_id")
+  secondaryPhone    String?   @map("secondary_phone")
+  contactProfile    Image?    @relation("contact_profile", fields: [profileId], references: [id])
+  profileId         String?   @map("profile_id")
+  referalSource     Source[]  @relation("referal_sources")
+  preferredCurrency String?   @map("preferred_currency")
+  preferredLanguage String?   @map("preferred_language")
+  associatedCompany Company?  @relation(fields: [companyId], references: [id])
+  companyId         String?   @map("company_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+  isDeleted         Boolean   @default(false) @map("is_deleted")
+  tags              Tag[]     @relation("contact_tags")
+
+  @@map("contacts")
+}
+
+model Address {
+  id          String  @id @default(uuid())
+  workspaceId String  @map("workspace_id")
+  street      String?
+  city        String?
+  country     String?
+
+  company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?  @map("company_id")
+
+  @@map("addresses")
+}
+
+enum SourceType {
+  ReferalSource
+  LeadSource
+  CompaignSource
+}
+
+model Source {
+  id          String     @id @default(uuid())
+  name        String
+  workspaceId String     @map("workspace_id")
+  sourceType  SourceType @map("source_type")
+  company     Company?   @relation("referal_sources", fields: [companyId], references: [id])
+  companyId   String?
+  contact     Contact?   @relation("referal_sources", fields: [contactId], references: [id])
+  contactId   String?
+
+  @@unique([name, workspaceId])
+  @@map("sources")
 }

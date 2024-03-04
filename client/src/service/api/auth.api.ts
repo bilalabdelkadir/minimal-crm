@@ -4,7 +4,7 @@ import {
   type IOtpResponse,
   type ISignupForm,
   type ISignupResponse,
-} from "@/pages/Auth/shared/auth.interface";
+} from "@/pages/auth/shared/auth.interface";
 import axiosInstance from "@/utils/apiInstance";
 import endpoints from "@/utils/endpoint";
 import { AxiosResponse } from "axios";

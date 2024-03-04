@@ -22,7 +22,6 @@ export class AccessTokenStrategy extends PassportStrategy(
         (request: Request) => {
           const [type, accessToken] =
             request.headers.authorization?.split(' ') ?? [];
-          this.logger.log('the accesstoken is', accessToken);
           return accessToken;
         },
       ]),

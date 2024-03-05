@@ -7,6 +7,7 @@ export const ROUTES = {
   APP: "/app",
   CRM: "/app/crm",
   CONTACTS: "/app/contacts",
+  COMPANY: "/app/company",
   LEADS: "/app/leads",
   DEALS: "/app/deals",
   TASKS: "/app/tasks",

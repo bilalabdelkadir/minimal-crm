@@ -13,6 +13,7 @@ import { MailModule } from './mail/mail.module';
 import { FileuploadModule } from './fileupload/fileupload.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { RolesModule } from './roles/roles.module';
+import { CompaniesModule } from './companies/companies.module';
 import AccessTokenGuard from './auth/guards/AccessToken.guard';
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import AccessTokenGuard from './auth/guards/AccessToken.guard';
     FileuploadModule,
     WorkspacesModule,
     RolesModule,
+    CompaniesModule,
   ],
   providers: [
     {

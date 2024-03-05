@@ -161,27 +161,27 @@ enum PreferredContactMethod {
 }
 
 model Company {
-  id                     String                 @id @default(uuid())
+  id                     String                  @id @default(uuid())
   name                   String
   email                  String
-  secondaryEmail         String?                @map("secondary_email")
-  workspaceId            String                 @map("workspace_id")
+  secondaryEmail         String?                 @map("secondary_email")
+  workspaceId            String                  @map("workspace_id")
   phone                  String?
-  secondaryPhone         String?                @map("secondary_phone")
+  secondaryPhone         String?                 @map("secondary_phone")
   website                String?
-  preferredContactMethod PreferredContactMethod @map("preferred_contact_method")
+  preferredContactMethod PreferredContactMethod? @map("preferred_contact_method")
   addresses              Address[]
-  logo                   Image?                 @relation("company_logo", fields: [logoId], references: [id])
-  logoId                 String?                @map("logo_id")
-  referalSource          Source[]               @relation("referal_sources")
-  preferredCurrency      String?                @map("preferred_currency")
-  preferredLanguage      String?                @map("preferred_language")
-  createdAt              DateTime               @default(now()) @map("created_at")
-  updatedAt              DateTime               @default(now()) @updatedAt @map("updated_at")
-  deletedAt              DateTime?              @map("deleted_at")
-  isDeleted              Boolean                @default(false) @map("is_deleted")
+  logo                   Image?                  @relation("company_logo", fields: [logoId], references: [id])
+  logoId                 String?                 @map("logo_id")
+  referalSource          Source[]                @relation("referal_sources")
+  preferredCurrency      String?                 @map("preferred_currency")
+  preferredLanguage      String?                 @map("preferred_language")
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @default(now()) @updatedAt @map("updated_at")
+  deletedAt              DateTime?               @map("deleted_at")
+  isDeleted              Boolean                 @default(false) @map("is_deleted")
   contacts               Contact[]
-  tags                   Tag[]                  @relation("company_tags")
+  tags                   Tag[]                   @relation("company_tags")
 
   @@unique([name, workspaceId])
   @@index([name])

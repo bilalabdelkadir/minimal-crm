@@ -8,6 +8,7 @@ import PublicRoutes from "@/layout/PublicRoutes";
 import ProtectedRoutes from "@/layout/ProtectedRoutes";
 import RequestOtp from "@/pages/auth/otp";
 import AppLayout from "@/layout/AppLayout";
+import Company from "@/pages/company";
 
 const Router = createBrowserRouter([
   {
@@ -36,8 +37,8 @@ const Router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           {
-            path: "/app/test1",
-            element: <h1>this is from test</h1>,
+            path: ROUTES.COMPANY,
+            element: <Company />,
           },
           {
             path: "/app/test2",

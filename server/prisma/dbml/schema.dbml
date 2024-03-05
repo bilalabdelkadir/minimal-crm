@@ -130,7 +130,7 @@ Table companies {
   phone String
   secondaryPhone String
   website String
-  preferredContactMethod PreferredContactMethod [not null]
+  preferredContactMethod PreferredContactMethod
   addresses addresses [not null]
   logo images
   logoId String

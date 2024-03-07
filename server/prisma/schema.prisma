@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -8,7 +9,8 @@ datasource db {
 }
 
 generator dbml {
-  provider = "prisma-dbml-generator"
+  provider        = "prisma-dbml-generator"
+  previewFeatures = ["fullTextSearch"]
 }
 
 model User {
@@ -184,6 +186,8 @@ model Company {
   tags                   Tag[]                   @relation("company_tags")
 
   @@unique([name, workspaceId])
+  @@unique([email, workspaceId])
+  @@unique([phone, workspaceId])
   @@index([name])
   @@map("companies")
 }
@@ -218,7 +222,9 @@ model Address {
   workspaceId String  @map("workspace_id")
   street      String?
   city        String?
-  country     String?
+  country     String
+  state       String?
+  zip         String?
 
   company   Company? @relation(fields: [companyId], references: [id])
   companyId String?  @map("company_id")

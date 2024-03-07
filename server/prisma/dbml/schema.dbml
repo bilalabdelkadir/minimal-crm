@@ -146,6 +146,8 @@ Table companies {
 
   indexes {
     (name, workspaceId) [unique]
+    (email, workspaceId) [unique]
+    (phone, workspaceId) [unique]
   }
 }
 
@@ -177,7 +179,9 @@ Table addresses {
   workspaceId String [not null]
   street String
   city String
-  country String
+  country String [not null]
+  state String
+  zip String
   company companies
   companyId String
 }

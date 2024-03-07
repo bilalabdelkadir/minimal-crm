@@ -68,7 +68,7 @@ export class AppModule implements NestMiddleware {
   use(req: any, res: any, next: (error?: any) => void) {
     throw new Error('Method not implemented.');
   }
-  configre(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggingMiddleware).forRoutes('*');
   }
 }

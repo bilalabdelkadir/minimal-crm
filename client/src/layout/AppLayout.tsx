@@ -3,7 +3,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { Outlet, useNavigate } from "react-router-dom";
 import { IconBuildingWarehouse, IconDashboard } from "@tabler/icons-react";
 import { ROUTES } from "@/router/constant";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 const data = [
   { link: ROUTES.APP, label: "Dashboard", icon: IconDashboard },
@@ -12,8 +14,20 @@ const data = [
 
 const AppLayout = () => {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+
+  const selectedWorkspace = useSelector(
+    (state: RootState) => state.workspaceInfo.selectedWorkspace?.id,
+  );
+
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!selectedWorkspace) {
+      navigate(ROUTES.WORKSPACE);
+    }
+  }, [selectedWorkspace]);
+
   const [active, setActive] = useState<"Dashboard" | "Company">("Dashboard");
   return (
     <>
@@ -43,12 +57,16 @@ const AppLayout = () => {
             <h3>Easy Crm App</h3>
           </Group>
         </AppShell.Header> */}
-        <AppShell.Navbar p={15}>
+        <AppShell.Navbar
+          p={15}
+          className="
+        bg-gray-100"
+        >
           Navbar
           {data?.map((data) => (
             <div
+              key={data.label}
               className="w-full 
-              bg-gray-100
             "
             >
               <Button
@@ -58,7 +76,7 @@ const AppLayout = () => {
                 leftSection={
                   <data.icon size={22} stroke={1.2} className="text-sm" />
                 }
-                className="text-sm font-medium text-gray-900 hover:bg-gray-100"
+                className="text-sm font-medium text-gray-900 hover:bg-gray-200"
                 justify="start"
                 onClick={(e) => {
                   e.preventDefault();

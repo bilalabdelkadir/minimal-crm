@@ -7,9 +7,14 @@ import axiosInstance from "@/utils/apiInstance";
 
 const ProtectedRoutes = () => {
   const auth = useSelector((state: RootState) => state.auth);
+  const selectedWorkspace = useSelector(
+    (state: RootState) => state.workspaceInfo.selectedWorkspace?.id,
+  );
 
   axiosInstance.defaults.headers.post["Content-Type"] =
     "application/x-www-form-urlencoded";
+  // set x-worspace-id header
+  axiosInstance.defaults.headers.common["x-workspace-id"] = selectedWorkspace;
   axiosInstance.defaults.headers.common["Authorization"] =
     `Bearer ${auth.accessToken}`;
   axiosInstance.defaults.headers.post["Authorization"] =

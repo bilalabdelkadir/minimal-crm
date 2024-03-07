@@ -27,9 +27,11 @@ export class LoggingMiddleware implements NestMiddleware {
       const contentLength = res.get('content-length');
       const responseTime = new Date().getTime() - requestTime;
       this.logger.log(
-        `${method} ${url} ${statusCode} ${contentLength} - ${responseTime}ms - ${userAgent} - ${JSON.stringify(body)} - ${JSON.stringify(query)} - ${JSON.stringify(params)}`,
+        `${method} ${url} ${statusCode} ${contentLength} - ${responseTime}ms - ${JSON.stringify(body)} - ${JSON.stringify(query)} - ${JSON.stringify(params)}`,
       );
     });
     next();
   }
 }
+
+// `${method} ${url} ${statusCode} ${contentLength} - ${responseTime}ms - ${userAgent} - ${JSON.stringify(body)} - ${JSON.stringify(query)} - ${JSON.stringify(params)}`,

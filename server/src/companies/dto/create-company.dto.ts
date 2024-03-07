@@ -12,12 +12,31 @@ import {
   IsArray,
 } from 'class-validator';
 import { PreferredContactMethod } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class BaseComanyContactDto {
   @ApiProperty()
-  @IsEmail()
+  @IsString()
+  @IsNotEmpty({
+    message: "Name can't be empty",
+  })
+  name: string;
+
+  @ApiProperty()
+  @IsEmail(
+    {},
+    {
+      message: 'Please provide a valid email address',
+    },
+  )
   email: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @Transform(({ value }) => String(value))
+  @IsString()
+  @IsNotEmpty()
+  phone?: string;
 
   @ApiProperty()
   @IsOptional()
@@ -26,16 +45,8 @@ export class BaseComanyContactDto {
 
   @ApiProperty()
   @IsOptional()
+  @Transform(({ value }) => String(value))
   @IsString()
-  @MinLength(8)
-  @MaxLength(15)
-  phone?: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @MinLength(8)
-  @MaxLength(15)
   secondaryPhone?: string;
 
   @ApiProperty()
@@ -50,6 +61,7 @@ export class BaseComanyContactDto {
   preferredContactMethod?: PreferredContactMethod;
 
   @IsArray()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => AddressDto)
   addresses: AddressDto[];
@@ -70,9 +82,14 @@ export class BaseComanyContactDto {
   preferredLanguage: string;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => String)
+  @IsOptional()
+  @IsString({ each: true })
   tags: string[];
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  contacts: string[];
 }
 
 export class CreateCompanyDto extends BaseComanyContactDto {
@@ -91,7 +108,15 @@ export class AddressDto {
   @IsString()
   city?: string;
 
+  @IsNotEmpty()
+  @IsString()
+  country: string;
+
   @IsOptional()
   @IsString()
-  country?: string;
+  state?: string;
+
+  @IsOptional()
+  @IsString()
+  zip?: string;
 }

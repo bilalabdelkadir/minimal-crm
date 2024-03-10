@@ -1,49 +1,51 @@
-import {
-  Button,
-  Container,
-  Stack,
-  Modal,
-  Text,
-  TextInput,
-  Title,
-  ScrollArea,
-  ModalBody,
-  Image,
-  Space,
-  Avatar,
-  Card,
-  Group,
-  Badge,
-} from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { IconNewSection } from "@tabler/icons-react";
-import { useForm, zodResolver } from "@mantine/form";
-import { workspaceSchema } from "./utils/workspace.schema";
-import { UploadProfile } from "./components/UploadPicture";
-import { IWorkspaceForm } from "./utils/workspace.interface";
-import { useEffect, useState } from "react";
-import { FileWithPath } from "@mantine/dropzone";
-import { AxiosError } from "axios";
-import {
-  onErrorNotfication,
-  onSuccessNotification,
-} from "../auth/shared/auth.utils";
-import {
-  createWorkspaceMutation,
-  fetchWorkspacesQuery,
-} from "./query/workspace.query";
-import { RootState, useAppDispatch } from "@/store/store";
+import { ROUTES } from "@/router/constant";
 import {
   setSelectedWorkspace,
   setWorkspaces,
 } from "@/store/slice/workspaces.slice";
+import { RootState, useAppDispatch } from "@/store/store";
 import { IWorkspaceResponse } from "@/types/Workspace.type";
+import {
+  Badge,
+  Button,
+  Card,
+  Container,
+  Group,
+  Image,
+  Modal,
+  ModalBody,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { FileWithPath } from "@mantine/dropzone";
+import { useForm, zodResolver } from "@mantine/form";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { IconNewSection } from "@tabler/icons-react";
+import { AxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  onErrorNotfication,
+  onSuccessNotification,
+} from "../auth/shared/auth.utils";
+import { UploadProfile } from "./components/UploadPicture";
+import {
+  createWorkspaceMutation,
+  fetchWorkspacesQuery,
+} from "./query/workspace.query";
+import { IWorkspaceForm } from "./utils/workspace.interface";
+import { workspaceSchema } from "./utils/workspace.schema";
 
 const WorkSpace = () => {
   const isMobile = useMediaQuery("(max-width: 35em)");
   const [opened, { open, close }] = useDisclosure(false);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [uploadedPicture, setUploadedPicture] = useState<FileWithPath[] | null>(
     null,
@@ -59,6 +61,7 @@ const WorkSpace = () => {
   };
 
   const { data: workspaces } = fetchWorkspacesQuery(["workspaces"]);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     dispatch(setWorkspaces(workspaces || []));
@@ -66,6 +69,7 @@ const WorkSpace = () => {
 
   const onSelectedWorkspace = (workspace: IWorkspaceResponse) => {
     dispatch(setSelectedWorkspace(workspace));
+    navigate(ROUTES.APP);
   };
 
   const form = useForm<IWorkspaceForm>({
@@ -86,6 +90,7 @@ const WorkSpace = () => {
     () => {
       form.reset();
       setUploadedPicture(null);
+      queryClient.invalidateQueries("workspaces");
       close();
       onSuccessNotification({ message: "Workspace created successfully" });
     },

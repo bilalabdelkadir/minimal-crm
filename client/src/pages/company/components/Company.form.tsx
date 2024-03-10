@@ -8,7 +8,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { AxiosError } from "axios";
 import { createCompanyMutation } from "../query/company.query";
-import { ICompanyForm } from "../utils/company.interface";
+import { type ICompanyForm } from "../utils/company.interface";
 import { companySchema } from "../utils/company.schema";
 import CompanyOptionalInputFields from "./CompanyOptionalInputFields";
 import CompanyRequiredInputFields from "./CompanyRequiredInputFields";
